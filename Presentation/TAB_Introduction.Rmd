@@ -55,7 +55,7 @@ class: title-tab
 
 <div class="tt-text">
   <p class="tt-course">Current Topics in Bioinformatics (TAB)</p>
-  <p class="tt-authors">Marta Coronado (<a href="mailto:marta.coronado@csic.es">marta.coronado@uab.cat</a>)</p><br>
+  <p class="tt-authors">Marta Coronado (<a href="mailto:marta.coronado@uab.cat">marta.coronado@uab.cat</a>)</p><br>
   <p class="tt-degree">Genetics Degree | Course 2026/27</p>
 </div>
 

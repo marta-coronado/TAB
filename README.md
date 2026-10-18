@@ -17,7 +17,7 @@ Course materials for **Current Topics in Bioinformatics** (*Temas Actuales de la
 
 ## Contact
 
-Marta Coronado Zamora · [marta.coronado@csic.es](mailto:marta.coronado@csic.es) · GitHub [@marta-coronado](https://github.com/marta-coronado)
+Marta Coronado Zamora · [marta.coronado@uab.cat](mailto:marta.coronado@uab.cat) · GitHub [@marta-coronado](https://github.com/marta-coronado)
 
 ## License
 

@@ -3,7 +3,7 @@ layout: default
 title: "Current Topics in Bioinformatics (TAB) UAB"
 ---
 
-# 🧬 Current Topics in Bioinformatics (TAB)
+# Current Topics in Bioinformatics (TAB)
 ## Genetics Degree (UAB) · Course 2026/27
 
 Welcome to the course website. Here you will find all the course materials, organized by section.

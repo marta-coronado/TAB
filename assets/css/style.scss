@@ -1,0 +1,11 @@
+---
+---
+
+@import "jekyll-theme-minimal";
+
+/* Site title in the logo's turquoise */
+header h1 a,
+header h1 a:hover,
+header h1 a:focus {
+  color: #00A49A;
+}

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Current Topics in Bioinformatics: Introduction</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/rutgers.css" rel="stylesheet" />
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"<i class=\"fa fa-clipboard\"><\/i>","success":"<i class=\"fa fa-check\" style=\"color: #90BE6D\"><\/i>","error":"Press Ctrl+C to Copy"})</script>
+    <link href="libs/font-awesome/css/all.min.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="tab.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v7.0.0/css/all.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+
+class: title-tab
+
+&lt;div class="tt-block"&gt;
+  &lt;div class="tt-title"&gt;Introduction&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="tt-text"&gt;
+  &lt;p class="tt-course"&gt;Current Topics in Bioinformatics (TAB)&lt;/p&gt;
+  &lt;p class="tt-authors"&gt;Marta Coronado (&lt;a href="mailto:marta.coronado@csic.es"&gt;marta.coronado@uab.cat&lt;/a&gt;)&lt;/p&gt;&lt;br&gt;
+  &lt;p class="tt-degree"&gt;Genetics Degree | Course 2026/27&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class="tt-grid"&gt;
+  &lt;div class="tile t1"&gt;&lt;i class="fa-solid fa-terminal"&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="tile t2"&gt;&lt;i class="fa-solid fa-chart-column"&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="tile t3"&gt;&lt;i class="fa-solid fa-dna"&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="tile t4"&gt;&lt;i class="fa-solid fa-circle-nodes"&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="tile t5"&gt;&lt;i class="fa-brands fa-github"&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class="tile t6"&gt;&lt;i class="fa-solid fa-laptop-code"&gt;&lt;/i&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+---
+class: animated, fadeIn
+
+## Contact
+
+&lt;center&gt;
+**Marta Coronado Zamora**
+
+Departament de Genètica i de Microbiologia (UAB)
+
+&lt;i class="fa-solid fa-paper-plane"&gt;&lt;/i&gt; &lt;a href="mailto:marta.coronado@uab.cat"&gt;marta.coronado@uab.cat&lt;/a&gt;&lt;br&gt;
+&lt;i class="fa-brands fa-bluesky"&gt;&lt;/i&gt; @geneticament.bsky.social &amp;nbsp; &lt;i class="fa-brands fa-github"&gt;&lt;/i&gt; @marta-coronado
+
+---
+class: animated, fadeIn
+
+## Practical information
+
+1. Check the schedule in this [link](https://web01.uab.es:31501/pds/consultaPublica/look%5Bconpub%5DInicioPubHora?entradaPublica=true) (it also includes the room)
+
+   &lt;div style="width:80%; margin:0 auto; height:300px; overflow:hidden; border:1px solid #ccc; border-radius:8px;"&gt;&lt;iframe src="https://web01.uab.es:31501/pds/consultaPublica/look%5Bconpub%5DInicioPubHora?entradaPublica=true" style="width:200%; max-width:none; height:600px; border:0; transform:scale(0.5); transform-origin:0 0;"&gt;&lt;/iframe&gt;&lt;/div&gt;
+
+2. Check the occupancy of the computer rooms: https://sidciencies.uab.cat/gabooking/consulta_libre.php
+
+---
+class: animated, fadeIn
+
+# Outline
+
+#### **01 | Course organization**
+
+Practical sessions, conferences, seminar session, methodology, evaluation, session dynamics
+
+#### **02 | Practical contents**
+
+Summary of the practical session's objectives and learning outcomes
+
+#### **03 | First task: get together**
+
+Groups organization, creation of the GitHub repository, tools
+
+---
+layout: false
+class: left, bottom, inverse, animated, bounceInDown
+
+# 01
+
+## Course organization
+
+Practical sessions, conferences, seminar session, methodology, evaluation, session dynamics
+
+---
+class: animated, fadeIn
+
+## Practical sessions (12h)
+
+**Introduction** | Presentation of **Current Topics in Bioinformatics** (Theory room C1/015, 20/10, 11:00h)
+
+**Hands-on training** (2h/session)
+
+.small[
+| | Session | Room | Date |
+|:--|:--|:--:|:--:|
+| **Part 1** | **Basics on Bioinformatics workflows** | | |
+| P1 | Data management and processing | PC5 | 21/10 |
+| P2 | Data exploration and visualization | PC5 | 06/11 |
+| | Extra time for practicals | PC1B | 09/11 |
+| **Part 2** | **Solving real cases in genomics** | | |
+| P3 | Differential gene expression analysis | PC5 | 18/11 |
+| P4 | Single-cell analysis with Seurat | PC1B | 26/11 |
+| | Extra time for practicals | PC6 | 15/12 |
+]
+
+---
+class: animated, fadeIn
+
+## Invited conferences and workshops
+
+Attend invited conferences and workshops by experts in bioinformatics in different areas. **Format**: in-person.
+
+.small[
+| Speaker | Affiliation | Date |
+|:--|:--|:--|:--:|
+| **Miriam Merenciano** | Beatriu de Pinós researcher at UAB | 28/10 – 12h – C5B/007 |
+| **Miquel Ràmia** | Made of genes (company) | 4/11 – 12h – C5B/007 |
+| **Irepan Salvador** | Researcher at Barcelona Supercomputing Center (BSC) | 11/11 &lt;i class="fa-solid fa-triangle-exclamation" style="color:#DE1144;"&gt;&lt;/i&gt;: **17/11 at 10h?** |
+| **Miquel Àngel Schikora** | Researcher at Barcelona Supercomputing Center (BSC) | 23/11 – 11h – C5B/007 |
+| **Jose F. Sánchez** | Bioinformatician at Germans Trias i Pujol | 25/11 – 13h – C1/015 |
+| **Cinta Pegueroles** | Lecturer professor at UAB | 01/12 – 11h – C1/015 |
+| **Victor Fernández** | Genetics Degree alumni | 9/12 – 10h – C5B/007 |
+| **Marta Coronado** | Lecturer professor at UAB | 16/12 – 10h – C1/015 |
+| **WRAP UP** | | 18/12 – 10h - C1/015 |
+]
+
+&lt;br&gt;
+&gt; Conferences will be updated and announced through Campus Virtual.
+
+---
+class: animated, fadeIn
+
+## Invited conferences and workshops
+
+We will ask general questions to the speakers (**check the [Forum](https://e-aules.uab.cat/2026-27/mod/forum/discuss.php?d=11963) to participate!**)
+
+&lt;br&gt;
+Examples of topics you can ask about:
+
+- Grant and funding opportunities
+
+- Challenges of pursuing a PhD
+
+- Working abroad vs. staying in Spain
+
+- Differences academia vs. company
+
+- Etc.!
+
+---
+class: animated, fadeIn
+
+## Seminar session
+
+**15 minutes + 5 minutes Q&amp;A**
+
+&lt;i class="fa-solid fa-calendar-days"&gt;&lt;/i&gt; 19th December, 15:30h (C5B/007)
+
+- Each group will prepare a presentation of a bioinformatic topic of their interest
+
+- Pick a topic from the list available at Campus Virtual, or propose any other topic
+
+---
+class: animated, fadeIn
+
+## Methodology
+
+.pull-left[
+
+**Cooperative learning process**
+
+- Groups of 3-4 students (enrollment through Campus Virtual)
+
+- Four connected practical sessions
+
+- Attend conferences and workshops by experts and ask questions
+
+]
+
+.pull-right[
+&lt;img src="img/methodology.png" width=100%&gt;
+]
+
+---
+class: animated, fadeIn
+
+## Evaluation
+
+.pull-left[
+
+#### Portfolio (70%)
+
+A GitHub repository containing:
+
+- **Personal presentation** (individual): what do I expect to learn?
+
+- **Practical reports** (group): one report for each of the four practicals
+
+- **Conference essays** (individual): two of the conferences you attended, including a discussion of the questions raised
+
+- **Final reflection** (individual): what did I learn?
+
+- **_Calaix de sastre_** (individual): miscellaneous section
+
+]
+
+.pull-right[
+
+#### Seminar (20%)
+
+- **Peer assessment:** each group grades the other groups' seminars using a rubric
+
+- **Co-evaluation:** members of each group assess each other
+
+- Presenting in English earns extra points
+
+#### Attendance and participation (10%)
+
+- Participation in the forum
+
+- Asking questions to the invited speakers
+
+- Any absence must be justified
+
+]
+
+.footnote[&lt;i class="fa-solid fa-triangle-exclamation"&gt;&lt;/i&gt; **Practical reports:** only students whose names appear on the submitted report will be graded for it.]
+
+---
+layout: false
+class: left, bottom, inverse, animated, bounceInDown
+
+# 02
+
+## Practical contents
+
+Summary of the practical session's objectives and learning outcomes
+
+---
+class: animated, fadeIn
+
+## Practical contents
+
+.grid-2x2[
+&lt;div&gt;
+&lt;img src="img/p1_linux.jpeg"&gt;
+&lt;p&gt;&lt;b&gt;P1&lt;/b&gt; | Data management and processing&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;
+&lt;img src="img/p2_ggplot2.png"&gt;
+&lt;p&gt;&lt;b&gt;P2&lt;/b&gt; | Data exploration and visualization&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;
+&lt;img src="img/p3_singlecell.png"&gt;
+&lt;p&gt;&lt;b&gt;P3&lt;/b&gt; | Single-cell analysis with Seurat&lt;/p&gt;
+&lt;/div&gt;
+&lt;div&gt;
+&lt;img src="img/p4_rnaseq.png"&gt;
+&lt;p&gt;&lt;b&gt;P4&lt;/b&gt; | Differential gene expression analysis&lt;/p&gt;
+&lt;/div&gt;
+]
+
+---
+class: animated, fadeIn
+
+## Contents (P1-P4)
+
+.pull-left[
+
+- Introduction to the practical's content
+
+- Jupyter Notebook or R Markdown document with the practical's guide
+
+- UAB computers have all the required software and tools
+
+&gt; How can I install Git? Anaconda? R and RStudio? Using Linux on Windows? see section 03
+
+]
+
+.pull-right[
+&lt;img src="img/jupyter.png" width=100%&gt;
+]
+
+---
+class: animated, fadeIn
+
+## P1 | Data management and processing
+
+_Part 1 | Basics on Bioinformatics workflows: transforming data into insight_
+
+&lt;img src="img/p1_linux.jpeg" style="float:right; width:38%; margin:0 0 10px 25px; border-radius:6px;"&gt;
+
+In this practical you will learn the basic commands of Linux. Getting familiar with these commands is key in bioinformatics, as many pipelines rely on the combination of different tools through a terminal. In addition, biological data are stored in large text files that can be easily processed using Linux.
+
+#### Learning outcomes
+
+- Get familiar with the Unix directories
+
+- Learn basic text-processing Linux commands and piping
+
+- Use the Linux command line to perform tasks on the data
+
+---
+class: animated, fadeIn
+
+## P2 | Data exploration and visualization
+
+_Part 1 | Basics on Bioinformatics workflows: transforming data into insight_
+
+&lt;img src="img/p2_ggplot2.png" style="float:right; width:38%; margin:0 0 10px 25px; border-radius:6px;"&gt;
+
+Why is data visualization so important for researchers? You can turn data into meaningful information.
+
+#### Learning outcomes
+
+- Learn the grammar of graphics of `ggplot2`
+
+- Create the most common bioinformatics graphs (scatterplots, line plots, barplots, ...)
+
+- Understand the important elements of a ready-to-publish figure
+
+
+---
+class: animated, fadeIn
+
+## P3 | Differential gene expression analysis
+
+_Part 1 | Solving real cases in genomics_
+
+&lt;img src="img/p4_rnaseq.png" style="float:right; width:38%; margin:0 0 10px 25px; border-radius:6px;"&gt;
+
+**Identifying differentially expressed genes in cancer**
+
+RNA-seq is an approach to carry out expression profiling using high-throughput sequencing technologies. In this practical, we walk through a gene-level RNA-seq differential expression analysis to find genes over- or under-expressed in control vs. patients.
+
+#### Learning outcomes
+
+- Data manipulation (P1) and visualization (P2)
+
+- Descriptive analysis of the data (P1)
+
+- Find which genes are differentially expressed using `DESeq2` and perform an enrichment analysis
+
+---
+class: animated, fadeIn
+
+## P4 | Single-cell analysis with Seurat
+
+_Part 2 | Solving real cases in genomics_
+
+&lt;img src="img/p3_singlecell.png" style="float:right; width:38%; margin:0 0 10px 25px; border-radius:6px;"&gt;
+
+**Identifying cell types from single-cell RNA-seq data**
+
+Single-cell RNA-seq (scRNA-seq) measures gene expression in thousands of individual cells, revealing the cellular heterogeneity that bulk RNA-seq averages out. In this practical, we will use the R package `Seurat` to go from a raw count matrix to an annotated map of the cell types present in a tissue.
+
+#### Learning outcomes
+
+- Understand the structure of scRNA-seq data (count matrix, `Seurat` object) and perform quality control of cells
+
+- Apply the standard workflow: normalization, selection of highly variable genes, scaling and dimensionality reduction (PCA, UMAP)
+
+- Cluster cells and identify marker genes for each cluster
+
+- Annotate clusters into cell types using known markers
+
+---
+layout: false
+class: left, bottom, inverse, animated, bounceInDown
+
+# 03
+
+## First task: get together
+
+Groups organization, creation of the GitHub repository, required tools
+
+---
+class: animated, fadeIn
+
+## Setting up a GitHub repository
+
+[Create an account in GitHub](https://github.com/join): one for each member of the group. **Only one** of the accounts must follow the next steps:
+
+1. In the top left part of the page, click on &lt;img src="img/github_new.png" height=105 style="vertical-align: middle;"&gt; to create a **new repository**.
+
+2. Write a short and easy-to-remember name for your new repository:
+
+&lt;center&gt;
+&lt;img src="img/github_repo_name.png" width=60%&gt;
+&lt;/center&gt;
+
+---
+class: animated, fadeIn
+
+## Setting up a GitHub repository
+
+&lt;ol start="3"&gt;&lt;li&gt;&lt;p&gt;Add a description for your repository, including the names of the group members.&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;
+
+&lt;center&gt;
+&lt;img src="img/github_description.png" width=45%&gt;
+&lt;/center&gt;
+
+--
+
+&lt;ol start="4"&gt;&lt;li&gt;&lt;p&gt;Make your repository &lt;strong&gt;private&lt;/strong&gt;.&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;
+
+&lt;center&gt;
+&lt;img src="img/github_private.png" width=50%&gt;
+&lt;/center&gt;
+
+---
+class: animated, fadeIn
+
+## Setting up a GitHub repository
+
+&lt;ol start="5"&gt;
+&lt;li&gt;&lt;p&gt;Select &lt;strong&gt;Initialize this repository with a README&lt;/strong&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Click on &lt;strong&gt;Create repository&lt;/strong&gt;.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;center&gt;
+&lt;img src="img/github_readme.png" width=65%&gt;
+&lt;/center&gt;
+
+---
+class: animated, fadeIn
+
+## Setting up a GitHub repository
+
+&lt;ol start="7"&gt;&lt;li&gt;&lt;p&gt;Add the rest of the group members as collaborators under &lt;strong&gt;Settings &amp;gt; Collaborators&lt;/strong&gt;. Also, add me as a collaborator (&lt;code class="remark-inline-code"&gt;marta-coronado&lt;/code&gt;).&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;
+
+&lt;center&gt;
+&lt;img src="img/github_collaborators.png" width=90%&gt;
+&lt;/center&gt;
+
+---
+class: animated, fadeIn
+
+## Using GitHub
+
+**Keep your GitHub updated**:
+
+- By using the browser version (recommended)
+
+&lt;center&gt;
+&lt;img src="img/add_files.png" width=90%&gt;
+&lt;/center&gt;
+
+- or with the command line if you use a UNIX system
+
+--
+
+Install `git` on your computer (all group members can install it):
+
+```bash
+sudo apt install git
+```
+
+---
+class: animated, fadeIn
+
+## Using GitHub
+
+.pull-left[
+
+- Go to a directory in which you want to clone your repository (e.g. a Desktop folder)
+
+- Open a terminal and write `git clone` followed by the link to your repository (you can find it by clicking on the **Code** button)
+
+```bash
+git clone https://github.com/USER-NAME/REPOSITORY-NAME.git
+```
+
+- This command will download the project into a folder named as the repository
+
+- You can use this folder as a regular one on your computer (create folders, copy files, etc.)
+
+]
+
+.pull-right[
+&lt;img src="img/github_clone.png" width=100%&gt;
+]
+
+---
+class: animated, fadeIn
+
+## Using GitHub: basic commands
+
+Before making any change, first of all execute `git pull` to update the repository to the most recent version:
+
+```bash
+git pull
+```
+
+--
+
+After finishing, add all the files that will be uploaded:
+
+```bash
+git add --all
+```
+
+--
+
+Comment all the changes that you have made:
+
+```bash
+git commit -m "Comment"
+```
+
+--
+
+To send all the changes:
+
+```bash
+git push
+```
+
+---
+class: animated, fadeIn
+
+## Install conda
+
+We recommend using Linux (or UNIX), but a good solution is to install Ubuntu under Windows.
+
+1. Download the installer:
+   - [Miniconda (Linux 64 bits)](https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh)
+   - [Anaconda (Linux 64 bits)](https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh)
+
+2. Install it through the terminal:
+
+```bash
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+
+&lt;ol start="3"&gt;
+&lt;li&gt;&lt;p&gt;Follow the instructions that you'll see on screen. Leave everything by default.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Restart the console once finished.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&gt; Everything is available at the computer room!
+
+---
+class: animated, fadeIn
+
+## Install R and RStudio
+
+- You can get R from: https://cran.r-project.org
+
+- You can download RStudio from: https://docs.posit.co/ide/user/download.html
+
+- R and RStudio are available for Windows, Linux and macOS for free.
+
+- Practicals need some R libraries installed; they are specified in the practical document.
+
+&gt; Everything is available at the computer room!
+
+---
+class: animated, fadeIn
+
+## LaTeX
+
+A nice template for your reports: https://www.overleaf.com/read/vchzpswtycyg
+
+.pull-left[
+&lt;center&gt;
+&lt;img src="img/latex_template.png" width=90%&gt;
+&lt;/center&gt;
+]
+
+.pull-right[
+&lt;center&gt;
+&lt;img src="img/latex_overleaf.png" width=90%&gt;
+&lt;/center&gt;
+]
+
+---
+class: animated, fadeIn
+
+## Get together: TO DO
+
+&lt;i class="fa-regular fa-square"&gt;&lt;/i&gt; Organize your group and enroll at the Campus Virtual: [link](https://e-aules.uab.cat/2026-27/mod/groupselect/view.php?id=58044)
+
+&lt;i class="fa-regular fa-square"&gt;&lt;/i&gt; Create [GitHub accounts](https://github.com/signup) for all members
+
+&lt;i class="fa-regular fa-square"&gt;&lt;/i&gt; Create [a repository in GitHub](https://github.com/new)
+
+&lt;i class="fa-regular fa-square"&gt;&lt;/i&gt; Add all group members (and me! &lt;code class="remark-inline-code"&gt;marta-coronado&lt;/code&gt;) as collaborators
+
+&lt;i class="fa-regular fa-square"&gt;&lt;/i&gt; Write general questions to ask our speakers in the [forum](https://e-aules.uab.cat/2026-27/mod/forum/discuss.php?d=11963)
+
+
+---
+class: animated, fadeIn
+
+## Contact
+
+&lt;center&gt;
+**Marta Coronado Zamora**
+
+Departament de Genètica i de Microbiologia (UAB)
+
+&lt;i class="fa-solid fa-paper-plane"&gt;&lt;/i&gt; &lt;a href="mailto:marta.coronado@uab.cat"&gt;marta.coronado@uab.cat&lt;/a&gt;&lt;br&gt;
+&lt;i class="fa-brands fa-bluesky"&gt;&lt;/i&gt; @geneticament.bsky.social &amp;nbsp; &lt;i class="fa-brands fa-github"&gt;&lt;/i&gt; @marta-coronado
+&lt;/div&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

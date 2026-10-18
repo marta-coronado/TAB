@@ -1,0 +1,86 @@
+/* ---- Portada (mismo esquema que las portadas de Bioestadística) ---- */
+.title-tab {
+  padding: 0 !important;
+}
+.title-tab .remark-slide-number {
+  display: none;
+}
+.title-tab .tt-block {
+  position: absolute; left: 0; top: 0;
+  width: 62.5%; height: 65%;
+  background: #1c5253;
+}
+.title-tab .tt-title {
+  position: absolute; left: 4%; bottom: 7%;
+  color: #fff;
+  font-family: 'Montserrat', sans-serif; font-weight: 300;
+  font-size: 3.2rem; line-height: 1.1;
+}
+.title-tab .tt-text {
+  position: absolute; left: 2.7%; top: 68%; width: 58%;
+  color: #000;
+}
+.title-tab .tt-course {
+  font-family: 'Josefin Sans', sans-serif; font-weight: 700;
+  font-size: 1.6rem; margin: 0 0 1.2rem 0;
+}
+.title-tab .tt-authors {
+  font-size: 1.05rem; margin: 0 0 0.6rem 0;
+}
+.title-tab .tt-degree {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 1.3rem; margin: 0;
+}
+.title-tab .tt-grid {
+  position: absolute; right: 0.8%; top: 2.3%;
+  width: 35.7%; height: 95.4%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 3.5% 5%;
+}
+.title-tab .tile {
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 5rem;
+}
+.tile.t1 { background: #95c06a; }
+.tile.t2 { background: #287593; }
+.tile.t3 { background: #318a72; }
+.tile.t4 { background: #ee6a20; }
+.tile.t5 { background: #9d3e50; }
+.tile.t6 { background: #fbc849; }
+
+/* ---- Profesores ---- */
+.prof {
+  text-align: center;
+}
+.prof img {
+  width: 190px; height: 190px;
+  border-radius: 50%; object-fit: cover;
+  border: 5px solid #1c5253;
+}
+.prof p {
+  margin: 0.35rem 0;
+}
+
+/* ---- Rejilla de imágenes de las prácticas ---- */
+.grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem 2rem;
+}
+.grid-2x2 img {
+  width: 100%; height: 165px; object-fit: cover;
+  border-radius: 6px;
+}
+.grid-2x2 p {
+  margin: 0.2rem 0;
+}
+
+/* ---- Utilidades ---- */
+.small {
+  font-size: 80%;
+}
+.small table {
+  font-size: 90%;
+}

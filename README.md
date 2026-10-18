@@ -7,9 +7,9 @@ Course materials for **Current Topics in Bioinformatics** (*Temas Actuales de la
 ## Contents
 
 - **Course presentation:** [`Presentation/`](Presentation/), introduction to the course (organization, evaluation, practical contents and first steps with GitHub)
-- **Practical sessions** *(coming soon)*
+- **Practical sessions**
   - Part 1 · Basics on Bioinformatics workflows
-    - P1: Data management and processing
+    - P1: Data management and processing: [`P1/`](P1/) ([view online](https://marta-coronado.github.io/TAB/P1/P1.html))
     - P2: Data exploration and visualization
   - Part 2 · Solving real cases in genomics
     - P3: Differential gene expression analysis

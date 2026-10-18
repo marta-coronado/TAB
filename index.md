@@ -18,7 +18,8 @@ Welcome to the course website. Here you will find all the course materials, orga
 ## 💻 Practical sessions
 
 **Part 1 · Basics on Bioinformatics workflows**
-- P1: Data management and processing *(coming soon)*
+- [P1: Data management and processing](P1/P1.html)
+  - <a href="P1/P1.ipynb" download>Download the Jupyter Notebook of P1 here</a>
 - P2: Data exploration and visualization *(coming soon)*
 
 **Part 2 · Solving real cases in genomics**

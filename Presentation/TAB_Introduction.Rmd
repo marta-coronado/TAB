@@ -5,7 +5,7 @@ author: ""
 date: ""
 output:
   xaringan::moon_reader:
-    css: [xaringan-themer.css, rutgers, tab.css, "https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css", "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css"]
+    css: [xaringan-themer.css, rutgers, tab.css, "https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"]
     lib_dir: libs
     self_contained: true
     seal: false
@@ -153,7 +153,7 @@ Attend invited conferences and workshops by experts in bioinformatics in differe
 |:--|:--|:--|:--:|
 | **Miriam Merenciano** | Beatriu de Pinós researcher at UAB | 28/10 – 12h – C5B/007 |
 | **Miquel Ràmia** | Made of genes (company) | 4/11 – 12h – C5B/007 |
-| **Irepan Salvador** | Researcher at Barcelona Supercomputing Center (BSC) | 11/11 <i class="fa-solid fa-triangle-exclamation" style="color:#DE1144;"></i>: **17/11 at 10h?** |
+| **Irepan Salvador** | Researcher at Barcelona Supercomputing Center (BSC) | 17/11 - 10h – C5B/007 |
 | **Miquel Àngel Schikora** | Researcher at Barcelona Supercomputing Center (BSC) | 23/11 – 11h – C5B/007 |
 | **Jose F. Sánchez** | Bioinformatician at Germans Trias i Pujol | 25/11 – 13h – C1/015 |
 | **Cinta Pegueroles** | Lecturer professor at UAB | 01/12 – 11h – C1/015 |

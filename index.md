@@ -20,7 +20,8 @@ Welcome to the course website. Here you will find all the course materials, orga
 **Part 1 · Basics on Bioinformatics workflows**
 - [P1: Data management and processing](P1/P1.html)
   - <a href="P1/P1.ipynb" download>Download the Jupyter Notebook of P1 here</a>
-- P2: Data exploration and visualization *(coming soon)*
+- [P2: Data exploration and visualization](P2/P2.html)
+  - <a href="P2/P2.Rmd" download>Download the R Markdown document of P2 here</a>
 
 **Part 2 · Solving real cases in genomics**
 - P3: Differential gene expression analysis *(coming soon)*

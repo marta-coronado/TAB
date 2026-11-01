@@ -205,117 +205,7 @@ ggplot(d, aes(a, b, color = pc)) +
 ::: {style="background-color: #86CBBB; 1px; height:3px "}
 :::
 
-# 3. Quick introduction to R
-
-## 3.1 Loading data
-
-To **load data from a delimited text file**, we normally use the
-`read.table()` function, indicating the name of the file we want to load
-(including the directory if the file is not located in the same working
-directory as the R session). Furthermore, we can specify if the file has
-a header with `header = TRUE` (by default `FALSE`) or the file delimiter
-with `sep =` (by default `sep = ""`, i.e., any white space).
-
-For example, to load the content of the `data.txt` file, which has a
-header and is a tab-delimited file, we will write:
-
-> `data <- read.table("data.txt", header = TRUE, sep = "\t")`
-
-Also, the `read.csv()` function allows opening files in `.csv` format
-(comma-separated values) and the `read_excel()` function of the
-`readxl` package allows opening Microsoft Excel files.
-
-## 3.2 Data formats
-
-In R, the most **common data types** are:
-
--   **Character**: consists of numbers, letters or words delimited with
-    quotes (e.g. `"AGT"`, `"2"`)
--   **Numeric**: consists of numbers, such as integers (e.g. `1`, `-3`)
-    or doubles (e.g. `0.5`, `-12.3`)
--   **Integer**: integer numbers, such as `2L` (the `L` tells R to store
-    this as an integer)
--   **Logical**: logical values can take on one of two values: `TRUE`
-    (or `T`) and `FALSE` (or `F`)
-
-::: {style="background-color:#FFDAA1"}
-<i class="fas fa-info-circle"></i> To know the data type, you can use
-the `class()` function.
-:::
-
-```{r}
-type_list <- list(TRUE, 1.2, 10L, "a")
-sapply(type_list, class)
-```
-
-Elements of the previous data types may be combined to form **data
-structures**. The main data structures are:
-
--   **Vector**: consists of an ordered set of values of the same type
-    and/or class (e.g. numeric, character, date, etc.).
-
-```{r}
-# A vector x of mode numeric
-x <- c(1, 2, 3)
-
-# A vector y of mode logical
-y <- c(TRUE, TRUE, FALSE, FALSE)
-
-# A vector z of mode character
-z <- c("Sarah", "Tracy", "Jon")
-```
-
--   **Matrices**: vectors indexed using two indices instead of one.
-
-```{r, eval = FALSE}
-# A 2 x 2 matrix
-matrix22 <- matrix(
-  c(1, 2, 3, 4),
-  nrow = 2,
-  ncol = 2)
-```
-
--   **Factors**: a collection of values that all come from a fixed set
-    of possible values. A factor is similar to a vector, except that the
-    values within a factor are limited to a fixed set of possible
-    values (the **levels**).
-
-```{r}
-# A vector containing "dna" and "rna"
-factor_vector <- as.factor(c("rna", "dna", "dna", "rna"))
-str(factor_vector)
-```
-
-::: {style="background-color:#FFDAA1"}
-<i class="fas fa-info-circle"></i> **Remember to always transform
-categorical variables to a factor**. You can have a categorical variable
-as characters, like the previous example ("`dna`" and "`rna`") but also
-as numerical values (you can have groups "`1`", "`2`" and "`3`"). In
-this case you need to tell R to use numerical values as a factor,
-transforming them using the `as.factor()` function.
-:::
-
--   **Lists**: a collection of data structures. The components of a list
-    can be of any structure.
-
-```{r, eval = FALSE}
-# A list
-x <- list(1, "a", TRUE, 1+4i)
-```
-
--   **Data frame**: a collection of vectors that all have the same
-    length. This is like a matrix, except that each column can contain a
-    different data type.
-
-```{r, eval = FALSE}
-# A data frame
-dat <- data.frame(id = letters[1:10], x = 1:10, y = 11:20)
-```
-
-::: {style="background-color: #86CBBB; 1px; height:3px "}
-:::
-
-# 4. Data visualization theory
+# 3. Data visualization theory
 
 There is grounded theory about data visualization ([Ortiz
 2014](https://tereom.github.io/est-computacional-2018/)). This section
@@ -332,7 +222,7 @@ contrast, the concept of **excellence** was defined as the
 efficiency** ([Minguillon
 2016](http://openaccess.uoc.edu/webapps/o2/handle/10609/57624)).
 
-## 4.1 Graphic quality indicators
+## 3.1 Graphic quality indicators
 
 Applicable to any graphic. These are concrete and relatively objective
 guides to assess the quality of a graph ([Tufte,
@@ -349,7 +239,7 @@ guides to assess the quality of a graph ([Tufte,
     print the graphic.
 :::
 
-### 4.1.1 Lie factor, chartjunk and pies
+### 3.1.1 Lie factor, chartjunk and pies
 
 <center>
 
@@ -379,7 +269,7 @@ why not simply show the data in a table? What does the pie graph add to
 the interpretation? This could be more difficult if, for example, more
 categories are added.
 
-### 4.1.2 Data-ink ratio
+### 3.1.2 Data-ink ratio
 
 Maximizing the proportion of **data-ink** in our graphs has immediate
 benefits. The rule is: **if there is ink that does not represent
@@ -398,7 +288,7 @@ so that everything that does not provide information must be deleted
 
 </center>
 
-## 4.2 Characteristics of effective graphic displays
+## 3.2 Characteristics of effective graphic displays
 
 As we have previously introduced, Tufte defined the term excellence in
 data visualization as communicating complex ideas with clarity,
@@ -423,7 +313,7 @@ precision and efficiency. A good visualization should:
 ::: {style="background-color: #86CBBB; 1px; height:3px "}
 :::
 
-# 5. The grammar of graphics
+# 4. The grammar of graphics
 
 In a natural language, there is a series of rules that organize words
 into sentences: the grammar. [Wilkinson
@@ -462,7 +352,7 @@ The **components** (or layers) of the grammar of graphics are:
 ::: {style="background-color: #86CBBB; 1px; height:3px "}
 :::
 
-# 6. First steps with `ggplot2`
+# 5. First steps with `ggplot2`
 
 The following examples will walk you through the basic components of the
 `ggplot2` grammar. The examples use data from the `datasets` package,
@@ -1350,118 +1240,199 @@ them before plotting.
 # <i class="fa fa-rocket"></i> Analyze a real scientific dataset
 
 We want to practice with real-world datasets to build our `ggplot2`
-skills. You can choose from 7 datasets. Make a meaningful
-representation of the data they contain. For each one you have the
-corresponding research article and a short description that can help.
+skills. Choose **one** of the following 7 datasets and explore it with
+**several plots**: each dataset contains several variables, so there is
+more than one interesting question to ask. For each one you have a
+short description, the meaning of the variables and the original
+study.
 
-Keep in mind what we have learnt: most of these datasets have **small
-sample sizes**, so **show the raw data** and avoid dynamite plots.
+Keep in mind what we have learnt:
 
-Datasets from: Whitlock, Michael C., and Dolph Schluter. 2020. *The
-Analysis of Biological Data*. Third Edition.
+-   **Show the raw data**, and choose the geometry depending on the
+    sample size
+-   Some datasets contain **repeated measures of the same individual**
+    (several measurements over time). To draw one line per individual,
+    use the `group` aesthetic (Example 4c)
+-   Check the **class** of each variable: some categorical variables are
+    coded as **numbers** and must be transformed to factors with
+    `factor()`, as we did with the transmission type (`am`) in Example 2b
 
-### 1. Zika and head size
-
-Zika virus can be spread by mosquitoes, sexual contact or from mother to
-fetus. In 2015 there was an outbreak in Brazil that spread to other
-countries in the Americas. Small head size (microcephaly) associated
-with abnormal brain development was frequently reported in newborn
-babies of infected mothers. Here are data for head measurements
-(biparietal diameter, in mm) of fetuses in pregnant women infected with
-Zika, taken from ultrasounds between 33 and 36 weeks. A head size
-between 80 and 94 mm is considered normal for uninfected mothers at this
-age.
-
--   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/chap02e2bZikaBiparietalDiameter.csv)
--   [Read the study](https://www.nejm.org/doi/full/10.1056/nejmoa1602412)
-
-### 2. Life at high altitude
-
-Living at high altitude represents some physiological challenges due to
-the limited oxygen supply. Human populations in the Andes, Ethiopia,
-and Tibet have faced these challenges, and adapted. One potential
-mechanism of this adaptation is to raise the hemoglobin content of blood
-to get more oxygen. Beall et al. measured the hemoglobin content of
-people from these three populations as well as a control group of males
-living at sea level in the USA.
-
--   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/chap02e3bHumanHemoglobinElevation.csv)
--   [Read the study](https://www.pnas.org/doi/10.1073/pnas.252649199)
-
-### 3. Don't go to the light!
-
-Altermatt and Ebert collected moths from populations in urban areas with
-decades of light pollution and from pristine, dark-sky areas, and
-counted how many of them were attracted to a light source. Moths from
-light-polluted areas showed a significantly weaker attraction to light,
-suggesting an evolutionary adaptation to artificial light at night.
-
-<i class="fa fa-key"></i> Hint: the columns `nAttracted` and
-`nNotAttracted` are counts of the same variable (attracted or not). To
-represent them together (e.g., as stacked bars per location) you need to
-transform them to the long format with `pivot_longer()`. Alternatively,
-you can represent `fractionAttracted` by `lightConditions`.
-
--   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/chap02q15MothsToLight.csv)
--   [Read the study](https://royalsocietypublishing.org/doi/10.1098/rsbl.2016.0111)
-
-### 4. Hearing color
-
-Some people experience one of their senses through another. For
-example, you might hear the name "Bob" and see grey. Saenz and Koch were
-interested to see how this type of perception impacted the ability to
-complete complex multi-sensory tasks. So they compared people with this
-unique type of sensory perception (known as synesthetes) to a group of
-people without such abilities (controls), on a test involving rhythmic
-temporal patterns similar to Morse code.
-
--   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/chap02q10Synesthetes.csv)
--   [Read the study](https://www.sciencedirect.com/science/article/pii/S0960982208007343)
-
-### 5. Eat less, live longer?
-
-For some reason, restricting food intake often increases lifespan. To
-see if this was the case in primates, Mattison et al. fed 17 rhesus
-monkeys (7 females, 10 males) a reduced diet with 30% less than the
-normal nutrition, and 17 other rhesus monkeys (8 females, 9 males) a
-normal nutritious diet.
-
--   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/chap02q35FoodReductionLifespan.csv)
--   [Read the study](https://www.nature.com/articles/nature11432)
-
-### 6. A gene for monogamy?
-
-The gene for the vasopressin receptor V1a is expressed at higher levels
-in the forebrain of monogamous than promiscuous vole species. To see if
-expression of this gene influenced monogamy, Lim et al. experimentally
-enhanced V1a expression in the forebrain of 11 males of the meadow vole
---a solitary promiscuous species-- and compared the percentage of time
-these and control males spent huddling with a female placed with them
-(as a measure of monogamy).
-
--   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/chap03q15VasopressinVoles.csv)
--   [Read the study](https://www.nature.com/articles/nature02539)
-
-### 7. Running with a lighter load
-
-Male spiders in the genus *Tidarren* are tiny and weigh about 1 percent
-as much as females. Just before sexual maturity, males voluntarily
-amputate one of their two pedipalps (their copulatory organs). Could
-this allow them to move faster? Ramos et al. measured the running speed
-of 16 males before and after the amputation.
-
-<i class="fa fa-key"></i> Hint: the same 16 spiders were measured
-twice. Does your plot show that?
-
--   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/chap03e2SpiderAmputation.csv)
--   [Read the study](https://www.pnas.org/doi/10.1073/pnas.0400324101)
-
-<i class="fa fa-key"></i> Hint: you can read the data directly using
-the link, for example:
+All the datasets are tab-separated files (`.tsv`). You can read them
+directly from the link, for example:
 
 ```{r eval = F}
-data <- read.csv("https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/chap03e2SpiderAmputation.csv")
+data <- read.table("https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/penguins.tsv", header = TRUE, sep = "\t")
 ```
+
+### 1. Palmer penguins
+
+Between 2007 and 2009, Kristen Gorman measured adult penguins of three
+species (Adelie, Chinstrap and Gentoo) on three islands of the Palmer
+Archipelago, Antarctica, as part of a long-term ecological research
+program.
+
+| Variable | Description |
+|:--|:--|
+| `species` | Adelie, Chinstrap or Gentoo |
+| `island` | Biscoe, Dream or Torgersen |
+| `bill_len`, `bill_dep` | bill length and depth (mm) |
+| `flipper_len` | flipper length (mm) |
+| `body_mass` | body mass (g) |
+| `sex`, `year` | sex and year of the measurement |
+
+<i class="fa fa-key"></i> Hint: plot bill length against bill depth for
+all the penguins together. What happens when you colour the points by
+species? How does body mass differ between species and sexes? Are the
+three species found on all the islands?
+
+-   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/penguins.tsv)
+-   [Read the study](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0090081)
+
+### 2. Insect biodiversity in Los Angeles
+
+Cities are warmer, drier and their vegetation is often non-native (for
+example, lawns), so urbanization could reduce insect diversity. Adams et
+al. placed insect traps in sites of Los Angeles with different levels of
+urbanization and counted the number of species captured in each trap
+(species **richness**).
+
+| Variable | Description |
+|:--|:--|
+| `Sample` | trap identifier |
+| `Urban.Type` | urbanization level: `1` (natural), `3` (suburban), `8` (developed) and `9` (dense) |
+| `Lawn` | whether there is a lawn next to the trap (`Yes` / `No`) |
+| `Richness` | number of insect species captured |
+| `Temp.Mean`, `Rh.Mean` | mean temperature (ºC) and relative humidity (%) |
+| `Photoperiod` | hours of light on the sampling day |
+
+<i class="fa fa-key"></i> Hint: `Urban.Type` is a categorical variable
+coded with numbers. Check which values it takes with
+`table(insects$Urban.Type)` and transform it to a factor with
+informative labels, as in Example 2b:
+`factor(insects$Urban.Type, levels = c(___), labels = c(___))`. How does
+richness change with urbanization? And with
+the presence of a lawn? Is richness related to any of the environmental
+variables?
+
+-   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/urban_insects.tsv)
+-   [Read the study](https://esajournals.onlinelibrary.wiley.com/doi/10.1002/eap.2089)
+
+### 3. Chick growth and diet
+
+The body weight of 50 chicks was measured every two days from birth to
+day 21. The chicks were fed with one of four experimental diets.
+
+| Variable | Description |
+|:--|:--|
+| `Chick` | chick identifier |
+| `Diet` | experimental diet (`1` to `4`) |
+| `Time` | days since birth |
+| `weight` | body weight (g) |
+
+<i class="fa fa-key"></i> Hint: draw the growth curve of each chick
+(one line per chick). Which diet produces the fastest growth? Do all the
+chicks follow the same pattern? Do all of them reach day 21?
+
+-   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/chick_weight.tsv)
+-   Study: Crowder, M. and Hand, D. (1990). *Analysis of Repeated
+    Measures*. Chapman and Hall (example 5.3).
+
+### 4. Photosynthesis and cold tolerance
+
+Potvin et al. studied the cold tolerance of the grass *Echinochloa
+crus-galli*. They measured the CO~2~ uptake of 12 plants from two
+origins (Quebec and Mississippi), half of them chilled overnight, at
+seven increasing concentrations of ambient CO~2~.
+
+| Variable | Description |
+|:--|:--|
+| `Plant` | plant identifier |
+| `Type` | origin of the plant: Quebec or Mississippi |
+| `Treatment` | `chilled` or `nonchilled` |
+| `conc` | ambient CO~2~ concentration (µL/L) |
+| `uptake` | CO~2~ uptake rate (µmol/m² s) |
+
+<i class="fa fa-key"></i> Hint: draw the response curve of each plant
+(uptake against CO~2~ concentration). Does chilling affect the plants of
+both origins in the same way?
+
+-   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/co2_grass.tsv)
+-   [Read the study](https://doi.org/10.2307/1938276)
+
+### 5. How fast is a drug eliminated?
+
+The anti-asthmatic drug theophylline was given orally to 12 people, and
+its concentration in blood was measured at 11 time points during the
+following 25 hours (a **pharmacokinetic** study).
+
+| Variable | Description |
+|:--|:--|
+| `Subject` | person identifier |
+| `Wt` | body weight (kg) |
+| `Dose` | dose of theophylline (mg/kg) |
+| `Time` | time since the drug was given (h) |
+| `conc` | theophylline concentration in serum (mg/L) |
+
+<i class="fa fa-key"></i> Hint: draw the concentration curve of each
+person. How does the concentration change over time? Try a logarithmic
+scale on the `y` axis (`scale_y_log10()`): what shape does the
+elimination phase have now? Does the dose explain the differences
+between people?
+
+-   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/theophylline.tsv)
+-   Study: Boeckmann, A. J., Sheiner, L. B. and Beal, S. L. (1994).
+    *NONMEM Users Guide: Part V*. NONMEM Project Group, University of
+    California, San Francisco.
+
+### 6. Mutations in the HIV genome
+
+HIV evolves very fast inside each patient. Theys et al. sequenced the
+virus of several patients over time and estimated, for each possible
+mutation in the reverse transcriptase gene, its **mean frequency** in
+the viral population. Mutations that are harmful for the virus are
+removed by natural selection and remain at **low frequencies**.
+
+| Variable | Description |
+|:--|:--|
+| `num` | position of the site in the sequence |
+| `AAnum` | position of the amino acid in the protein |
+| `TypeOfSite` | `syn` (synonymous: the amino acid does not change) or `nonsyn` (non-synonymous) |
+| `WTnt` | original (wild-type) nucleotide: `a`, `c`, `g` or `t` |
+| `WTAA`, `MUTAA` | original and mutated amino acid |
+| `bigAAChange` | `1` if the amino acid changes drastically (e.g. in charge or size), `0` otherwise |
+| `MeanFreq` | mean frequency of the mutation in the patients |
+| `TSmutrate` | mutation rate of the site |
+| `EstSelCoeff` | estimated cost of the mutation for the virus (selection coefficient) |
+
+<i class="fa fa-key"></i> Hint: the frequencies vary over several
+orders of magnitude, so try a logarithmic scale. Are synonymous or
+non-synonymous mutations more frequent? Why? Among non-synonymous
+mutations, are drastic amino acid changes less frequent? Does the
+frequency depend on the original nucleotide?
+
+-   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/hiv_mutations.tsv)
+-   [Read the study](https://doi.org/10.1371/journal.pgen.1007420)
+
+### 7. The 1918 flu pandemic
+
+The 1918 influenza pandemic (the "Spanish flu") killed tens of millions
+of people worldwide. These data are the number of deaths at each age,
+in women and men.
+
+| Variable | Description |
+|:--|:--|
+| `age` | age (years) |
+| `femaleDeaths`, `maleDeaths` | number of deaths of women and men of that age |
+| `totalDeaths` | total number of deaths |
+
+<i class="fa fa-key"></i> Hint: to plot women and men in the same graph
+(one line each), you need the data in the **long format** with
+`pivot_longer()`. Which ages had more deaths? Is the pattern what you
+would expect for a flu? Is it the same in women and men?
+
+-   [Data](https://raw.githubusercontent.com/marta-coronado/TAB/main/P2_datasets/spanish_flu_1918.tsv)
+-   Data from: Whitlock, M. C. and Schluter, D. (2020). *The Analysis
+    of Biological Data*. Third Edition (example 10.6).
 
 ```{r analyse-dataset}
 

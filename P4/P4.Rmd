@@ -1,0 +1,558 @@
+---
+title: "**P4 | Solving real cases in genomics**<br><font color='#A8A8A8' size='5'>Identifying cell types with single-cell RNA-seq</font>"
+author: "Current Topics in Bioinformatics"
+date: "November 2026"
+output:
+  html_document:
+    theme: yeti
+    css: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css
+    self_contained: false
+editor_options:
+  markdown:
+    wrap: 72
+header-includes:
+  - \usepackage{fontawesome}
+---
+
+```{r setup, include = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center", fig.width = 6, fig.height = 4,
+                      message = FALSE, warning = FALSE)
+set.seed(1234)
+```
+
+<style>
+  @import url(https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,500,500i,700,700i);
+  @import url(https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css);
+  @import url("https://use.fontawesome.com/releases/v5.10.1/css/all.css");
+</style>
+
+<div style="background-color: #86CBBB; 1px; height:3px " ></div>
+
+## 1. Introduction
+
+Bulk RNA-seq, like the one we analysed in P3, measures the **average** expression of each gene across thousands or millions of cells. However, tissues are mixtures of many different cell types, and a change in a bulk profile can be due to a change in gene expression *or* to a change in the proportion of cell types. **Single-cell RNA-seq** (scRNA-seq) measures gene expression in each individual cell, which allows us to discover which cell types are present in a sample, in which proportions, and which genes characterise each of them.
+
+The most widely used scRNA-seq technology is the droplet-based **10x Genomics Chromium**. Each cell is captured in an oil droplet together with a bead carrying a unique **cell barcode** and **UMIs** (*Unique Molecular Identifiers*), so that each sequenced read can be assigned to a cell and PCR duplicates can be collapsed. The **Cell Ranger** pipeline then produces, for each sample, a **count matrix** of genes × cells.
+
+In this practical we will analyse scRNA-seq data with [**Seurat**](https://satijalab.org/seurat/), the most widely used R package for single-cell analysis ([Hao, et al., 2024](https://www.nature.com/articles/s41587-023-01767-y)). The standard workflow is:
+
+<center>
+**Quality control → Normalization → Highly variable genes → Scaling & PCA → Clustering & UMAP → Marker genes → Cell type annotation**
+</center>
+
+### 1.1 Experimental data
+
+10x Genomics provides many public datasets in Cell Ranger format (a folder with the files `barcodes.tsv`, `genes.tsv`/`features.tsv` and `matrix.mtx`). In this practical we will use two datasets of **peripheral blood mononuclear cells (PBMC)** from healthy donors:
+
+| **Dataset** | **Chemistry** | **Cells** | **Use** | **Download** |
+|-------------|---------------|-----------|---------|--------------|
+| PBMC 3k | 10x v1 | ~2,700 | Worked example | [Link](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz) |
+| PBMC 10k | 10x v3 | ~11,500 | Your analysis | [Link](https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_10k_v3/pbmc_10k_v3_filtered_feature_bc_matrix.tar.gz) |
+
+The practical consists of a worked example with the **PBMC 3k** dataset, following the [Seurat guided clustering tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html). Then, you will analyse the **PBMC 10k** dataset on your own. It is the same type of sample, but with four times more cells and a more sensitive chemistry, so you will be able to find **more cell types and subtypes** than in the example. **Nobody will tell you which ones: annotating them is your job**.
+
+#### P4 Learning outcomes
+
+* Understand the structure of single-cell RNA-seq data (sparse count matrices)
+* Perform quality control of cells and justify the filtering thresholds
+* Apply the standard Seurat workflow: normalization, dimensionality reduction and clustering
+* Identify marker genes and annotate cell types using biological knowledge and databases
+* Visualize the results (P2)
+
+### 1.2 Practicals organization
+
+In this practical, we are going to use the [**RStudio**](https://posit.co/) integrated development environment (IDE) for R.
+
+You will see different icons through the document, the meaning of which is:
+
+&emsp;<i class="fas fa-info-circle"></i>: additional or useful information<br>
+&emsp;<i class="fas fa-search"></i>: a worked example<br>
+&emsp;<i class="fa fa-cogs"></i>: a practical exercise<br>
+&emsp;<i class="fas fa-comment-dots"></i>: a space to answer the exercise<br>
+&emsp;<i class="fa fa-key"></i>: a hint to solve an exercise<br>
+&emsp;<i class="fa fa-rocket"></i>: a more challenging exercise<br><br>
+
+<div style="background-color: #86CBBB; 1px; height:3px " ></div>
+
+# 2. Tools installation
+
+Follow `P2.Rmd` instructions if you need to install **[R](https://cran.r-project.org/)** and/or **[RStudio](https://posit.co/download/rstudio-desktop/#download)** for either Windows or Linux.
+
+### 2.1 Required R packages
+
+You don't need to install the packages in the UAB computers, only loading them.
+
+```{r packages, eval = FALSE}
+install.packages("Seurat")
+install.packages("dplyr")
+install.packages("patchwork")
+install.packages("ggplot2")
+```
+
+<i class="fa fa-exclamation-triangle"></i> **`SingleR` is not installed in the UAB computers.** If you want to do the optional automatic annotation activity (section 8), install it yourself at the beginning of the session (it takes a few minutes; it will be installed in your personal R library):
+
+```{r install-singler, eval = FALSE}
+BiocManager::install("SingleR")
+```
+
+<i class="fas fa-info-circle"></i> Optionally, you can install the `presto` package, which makes the search for marker genes (`FindAllMarkers()`) much faster. Seurat will use it automatically if it is installed:
+
+```{r presto, eval = FALSE}
+install.packages("remotes")
+remotes::install_github("immunogenomics/presto")
+```
+
+Load the packages:
+
+```{r load_packages}
+library(Seurat)
+library(dplyr)
+library(patchwork)
+library(ggplot2)
+```
+
+<div style="background-color: #86CBBB; 1px; height:3px " ></div>
+
+# <i class = "fa fa-search"></i>Conducting a single-cell RNA-seq analysis
+
+With this worked example, we are going to analyse ~2,700 **peripheral blood mononuclear cells** (PBMC) from a healthy donor, sequenced with 10x Genomics. PBMCs are blood cells with a single, round nucleus: lymphocytes (T cells, B cells, NK cells), monocytes and dendritic cells. The goal is to identify, from the expression profile of each cell alone, which cell types are present in the sample.
+
+### 1. Prepare data
+
+**<i class="fa fa-cogs"></i> Create a working directory named `Practical 4`, and inside a folder named `data`.**
+
+```{r, eval = FALSE}
+# bash code to create directories
+
+```
+
+**<i class="fa fa-cogs"></i> Navigate to the `data` folder, download the [PBMC 3k data](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz) using `wget` and uncompress it with `tar`.**
+
+```{r, eval = FALSE}
+# bash code to download and uncompress the data
+
+```
+
+<i class="fa fa-key"></i> `tar -xzvf file.tar.gz` uncompresses a `.tar.gz` file. Explore the folder that has been created: which files does it contain? Look at the first lines of each of them with `head` (and `zcat ... | head` if they are compressed).
+
+<div style="background-color:#F0F0F0">
+##### &emsp;<i class="fas fa-comment-dots"></i> Answer:
+
+</div>
+
+### 2. Load the data and create the Seurat object
+
+The `Read10X()` function reads the output of Cell Ranger and returns a **count matrix** with genes in rows and cells (barcodes) in columns.
+
+<i class="fa fa-key"></i> Remember to change the working directory or the path to properly load the data if it's necessary:
+
+```{r read-data}
+# Load the PBMC dataset
+pbmc.data <- Read10X(data.dir = "filtered_gene_bc_matrices/hg19/")
+dim(pbmc.data)
+```
+
+Let's look at the counts of three genes (*CD3D*, *TCL1A* and *MS4A1*) in the first 30 cells:
+
+```{r inspect-matrix}
+pbmc.data[c("CD3D", "TCL1A", "MS4A1"), 1:30]
+```
+
+<i class="fa fa-question-circle"></i> **The `.` values in the matrix represent 0s. Why do you think Seurat uses a *sparse matrix* to store the data instead of a normal (dense) matrix? Check it by comparing the memory used by both objects:**
+
+```{r sparse}
+dense.size <- object.size(as.matrix(pbmc.data))
+sparse.size <- object.size(pbmc.data)
+format(dense.size, units = "MB")
+format(sparse.size, units = "MB")
+```
+
+<div style="background-color:#F0F0F0">
+##### &emsp;<i class="fas fa-comment-dots"></i> Answer:
+
+</div>
+
+Now we create the **Seurat object**, the container that will store the data and all the results of the analysis. We apply a first, very mild filter: we keep genes detected in at least 3 cells, and cells with at least 200 detected genes.
+
+```{r create-object}
+pbmc <- CreateSeuratObject(counts = pbmc.data, project = "pbmc3k",
+                           min.cells = 3, min.features = 200)
+pbmc
+```
+
+The phenotype information of each cell (the equivalent of `colData()` in P3) is stored in the `meta.data` slot. Seurat has already calculated, for each cell, the total number of molecules detected (`nCount_RNA`) and the number of genes detected (`nFeature_RNA`):
+
+```{r metadata}
+head(pbmc@meta.data, 5)
+```
+
+### 3. Quality control (QC)
+
+Before analysing the data we have to discard low-quality cells. The most common problems in droplet-based data are:
+
+* **Empty droplets** or broken cells: very few genes detected.
+* **Doublets**: two cells captured in the same droplet, with an unusually high number of genes and molecules.
+* **Dying cells**: a high percentage of reads coming from the **mitochondrial genome**. When the cell membrane breaks, cytoplasmic mRNAs are lost but the mitochondrial transcripts (protected inside the mitochondria) are retained.
+
+We calculate the percentage of mitochondrial reads with `PercentageFeatureSet()`, using all genes whose name starts with `MT-`:
+
+```{r percent-mt}
+pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
+```
+
+<i class="fas fa-info-circle"></i> In **mouse**, mitochondrial gene names are written in lowercase: use `pattern = "^mt-"`. You can check it with `grep("^mt-", rownames(object), value = TRUE)`.
+
+We visualize the three QC metrics:
+
+```{r qc-violin, fig.width = 9}
+VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+```
+
+```{r qc-scatter, fig.width = 9}
+plot1 <- FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+plot1 + plot2
+```
+
+We will keep cells with more than 200 and less than 2,500 detected genes, and less than 5% of mitochondrial reads:
+
+```{r qc-filter}
+pbmc <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
+pbmc
+```
+
+<i class="fa fa-question-circle"></i> **Looking at your plots, do these thresholds seem reasonable for this dataset? Would you change any of them? How many cells (and which percentage) have been removed? Thresholds are not universal: when you analyse your own dataset, you will need to choose (and justify!) your own.**
+
+<div style="background-color:#F0F0F0">
+##### &emsp;<i class="fas fa-comment-dots"></i> Answer:
+
+</div>
+
+### 4. Normalization and highly variable genes
+
+Each cell has been sequenced at a different depth, so the counts are not directly comparable between cells. The default method, `LogNormalize`, divides the counts of each gene by the total counts of the cell, multiplies by a scale factor (10,000) and log-transforms the result:
+
+```{r normalize}
+pbmc <- NormalizeData(pbmc, normalization.method = "LogNormalize", scale.factor = 10000)
+```
+
+Next, we select the genes that vary the most between cells (by default, the top 2,000). These **highly variable genes** are the most informative ones to distinguish cell types, and focusing on them reduces noise and computation time.
+
+```{r variable-features, fig.width = 9}
+pbmc <- FindVariableFeatures(pbmc, selection.method = "vst", nfeatures = 2000)
+
+# Top 10 most highly variable genes
+top10 <- head(VariableFeatures(pbmc), 10)
+top10
+
+plot1 <- VariableFeaturePlot(pbmc)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot1 + plot2
+```
+
+<i class="fa fa-question-circle"></i> **Choose two of the top 10 genes and search for them in [GeneCards](https://www.genecards.org/). In which cell type are they expressed?**
+
+<div style="background-color:#F0F0F0">
+##### &emsp;<i class="fas fa-comment-dots"></i> Answer:
+
+</div>
+
+### 5. Scaling and dimensionality reduction (PCA)
+
+Before the PCA, we **scale** the data so that each gene has mean 0 and variance 1 across cells. This way, highly expressed genes do not dominate the analysis.
+
+```{r scale}
+all.genes <- rownames(pbmc)
+pbmc <- ScaleData(pbmc, features = all.genes)
+```
+
+We run a **Principal Component Analysis** (PCA) on the highly variable genes:
+
+```{r pca}
+pbmc <- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+
+# Genes with the highest loadings in the first 5 PCs
+print(pbmc[["pca"]], dims = 1:5, nfeatures = 5)
+```
+
+```{r pca-plot}
+DimPlot(pbmc, reduction = "pca") + NoLegend()
+```
+
+How many PCs should we keep for the following steps? The **elbow plot** shows the standard deviation explained by each PC. We look for the point where the curve flattens (the "elbow"):
+
+```{r elbow}
+ElbowPlot(pbmc)
+```
+
+<i class="fa fa-question-circle"></i> **Where is the elbow? How many PCs would you use? There is no single correct answer, but the [Seurat tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html) recommends to *err on the higher side*. Why do you think so?**
+
+<div style="background-color:#F0F0F0">
+##### &emsp;<i class="fas fa-comment-dots"></i> Answer:
+
+</div>
+
+### 6. Clustering and UMAP
+
+Seurat groups the cells by building a **k-nearest neighbours graph** in the PCA space (`FindNeighbors()`) and then finding communities of highly connected cells in this graph (`FindClusters()`). The `resolution` parameter controls the granularity: higher values give more clusters.
+
+```{r clustering}
+pbmc <- FindNeighbors(pbmc, dims = 1:10)
+pbmc <- FindClusters(pbmc, resolution = 0.5)
+
+# number of cells in each cluster
+table(Idents(pbmc))
+```
+
+To visualize the clusters we use **UMAP**, a non-linear dimensionality reduction that places similar cells close to each other in two dimensions:
+
+```{r umap}
+pbmc <- RunUMAP(pbmc, dims = 1:10)
+DimPlot(pbmc, reduction = "umap", label = TRUE)
+```
+
+<i class="fa fa-question-circle"></i> **Run `FindClusters()` again with `resolution = 0.2` and `resolution = 1.2`. How many clusters do you get in each case? Note that the clusters were computed on the PCA, not on the UMAP: why do you think Seurat does not cluster directly on the two UMAP dimensions?**
+
+<i class="fa fa-key"></i> To avoid overwriting your results, save the new object with a different name (e.g. `pbmc.test <- FindClusters(pbmc, resolution = 0.2)`).
+
+```{r resolution}
+
+```
+
+<div style="background-color:#F0F0F0">
+##### &emsp;<i class="fas fa-comment-dots"></i> Answer:
+
+</div>
+
+### 7. Marker genes
+
+**Marker genes** are genes that are differentially expressed in one cluster compared to all the other cells. `FindAllMarkers()` tests every cluster against the rest (by default, with a Wilcoxon rank-sum test):
+
+```{r markers}
+pbmc.markers <- FindAllMarkers(pbmc, only.pos = TRUE)
+
+# top 3 markers of each cluster
+top3 <- pbmc.markers %>%
+  group_by(cluster) %>%
+  dplyr::filter(avg_log2FC > 1) %>%
+  slice_head(n = 3) %>%
+  ungroup()
+top3
+```
+
+<i class="fa fa-question-circle"></i> **What do the columns `pct.1`, `pct.2`, `avg_log2FC` and `p_val_adj` mean? Which is more convincing as a marker: a gene with `pct.1 = 0.95` and `pct.2 = 0.10`, or a gene with `pct.1 = 0.95` and `pct.2 = 0.80`?**
+
+<i class="fa fa-key"></i> `?FindMarkers`
+
+<div style="background-color:#F0F0F0">
+##### &emsp;<i class="fas fa-comment-dots"></i> Answer:
+
+</div>
+
+We can visualize the expression of markers on the UMAP (`FeaturePlot()`), as violin plots (`VlnPlot()`) or summarise many genes and clusters at once with a `DotPlot()`, where the colour represents the average expression and the size the percentage of cells of the cluster expressing the gene:
+
+```{r featureplot, fig.width = 10, fig.height = 8}
+FeaturePlot(pbmc, features = c("MS4A1", "GNLY", "CD3E", "CD14", "FCER1A",
+                               "FCGR3A", "LYZ", "PPBP", "CD8A"))
+```
+
+```{r dotplot, fig.width = 9, fig.height = 4}
+canonical.markers <- c("IL7R", "CCR7", "S100A4", "CD8A", "MS4A1", "GNLY", "NKG7",
+                       "CD14", "LYZ", "FCGR3A", "MS4A7", "FCER1A", "CST3", "PPBP")
+DotPlot(pbmc, features = canonical.markers) + RotatedAxis()
+```
+
+### 8. Cell type annotation
+
+This is the step that requires **biological knowledge**. For PBMCs, the following canonical markers are well known:
+
+| **Markers** | **Cell type** |
+|-------------|---------------|
+| IL7R, CCR7 | Naive CD4+ T |
+| IL7R, S100A4 | Memory CD4+ T |
+| CD8A | CD8+ T |
+| MS4A1 | B |
+| GNLY, NKG7 | NK |
+| CD14, LYZ | CD14+ Monocytes |
+| FCGR3A, MS4A7 | FCGR3A+ Monocytes |
+| FCER1A, CST3 | Dendritic cells (DC) |
+| PPBP | Platelets |
+
+<i class="fa fa-question-circle"></i> **Using the `FeaturePlot()`, the `DotPlot()` and the table of markers, assign a cell type to each cluster before looking at the solution below. Which pairs of cell types are the most difficult to distinguish? Why?**
+
+<div style="background-color:#F0F0F0">
+##### &emsp;<i class="fas fa-comment-dots"></i> Answer:
+
+</div>
+
+Once each cluster has a name, we rename the identities of the cells:
+
+```{r annotation}
+new.cluster.ids <- c("Naive CD4 T", "CD14+ Mono", "Memory CD4 T", "B", "CD8 T",
+                     "FCGR3A+ Mono", "NK", "DC", "Platelet")
+names(new.cluster.ids) <- levels(pbmc)
+pbmc <- RenameIdents(pbmc, new.cluster.ids)
+
+DimPlot(pbmc, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend()
+```
+
+<i class="fas fa-info-circle"></i> The order of the clusters can change between Seurat versions or with different parameters. **Always check** that the names you assign match the markers of each cluster (for example, with the `DotPlot()` above).
+
+Finally, we can calculate the **proportion of each cell type** in the sample:
+
+```{r proportions}
+cell.types <- data.frame(table(Idents(pbmc)))
+colnames(cell.types) <- c("CellType", "Cells")
+cell.types$Percentage <- round(100 * cell.types$Cells / sum(cell.types$Cells), 1)
+cell.types
+```
+
+<i class="fa fa-question-circle"></i> **Make a publication-quality bar plot of the proportion of each cell type with `ggplot2` (P2). Are these proportions what you would expect in the blood of a healthy person?**
+
+```{r proportions-plot}
+
+```
+
+<div style="background-color:#F0F0F0">
+##### &emsp;<i class="fas fa-comment-dots"></i> Answer:
+
+</div>
+
+Save the final object so that you don't need to repeat the whole analysis:
+
+```{r save, eval = FALSE}
+saveRDS(pbmc, file = "pbmc3k_final.rds")
+# To load it again: pbmc <- readRDS("pbmc3k_final.rds")
+```
+
+<i class="fa fa-rocket"></i> **Optional activity: automatic annotation.** Besides manual annotation, there are tools that annotate cells automatically by comparing them to a reference dataset of known cell types. One of them is the Bioconductor package [`SingleR`](https://bioconductor.org/packages/release/bioc/vignettes/SingleR/inst/doc/SingleR.html). As reference we will use the **Monaco immune dataset** (Monaco et al., 2019), with the expression profiles of 29 immune cell types sorted from human blood. It is distributed by the `celldex` package, but we provide it as an R file ([`MonacoImmuneData_reference.rds`](https://marta-coronado.github.io/TAB/P4/MonacoImmuneData_reference.rds), 20 MB, also available in the Moodle), so you do not need to install `celldex`. Download it to your working directory with `wget`:
+
+```{bash, eval = FALSE}
+wget https://marta-coronado.github.io/TAB/P4/MonacoImmuneData_reference.rds
+```
+
+You only need to install **`SingleR`** (see section 2.1), because it is not installed in the UAB computers. This activity is **optional**: if you do it, compare the predicted labels with your manual annotation. Do they agree? In which cell types do they disagree, and why?
+
+```{r singler, eval = FALSE}
+# Installation (only once; SingleR is NOT installed in the UAB computers)
+BiocManager::install("SingleR")
+
+library(SingleR)
+library(SummarizedExperiment)
+
+# Load the reference dataset (genes x reference samples, with their cell type labels)
+ref <- readRDS("MonacoImmuneData_reference.rds")
+table(ref$label.fine)
+
+# SingleR compares the normalized expression of each cell with the reference
+pred <- SingleR(test = GetAssayData(pbmc, layer = "data"),
+                ref = ref,
+                labels = ref$label.fine)
+
+# Add the predicted labels to the Seurat object and plot them
+pbmc$singler <- pred$labels
+DimPlot(pbmc, group.by = "singler", label = TRUE, repel = TRUE) + NoLegend()
+
+# Compare with the manual annotation: rows = your clusters, columns = SingleR labels
+table(Idents(pbmc), pbmc$singler)
+```
+
+<div style="background-color: #86CBBB; 1px; height:3px " ></div>
+
+# <i class="fa fa-cogs"></i> Perform a single-cell RNA-seq analysis
+
+**Following the PBMC 3k example, analyse the [PBMC 10k dataset](https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_10k_v3/pbmc_10k_v3_filtered_feature_bc_matrix.tar.gz). Your main goal is to identify and annotate as many cell types and subtypes as you can, and compare them with the ones found in the worked example.**
+
+Some advice:
+
+* <i class="fa fa-key"></i> This dataset was processed with a recent version of Cell Ranger: the files are compressed (`.gz`) and the genes are in `features.tsv.gz`. `Read10X()` reads both formats: give it the folder that contains the three files.
+* <i class="fa fa-key"></i> **Do not copy the QC thresholds of the example**: look at your violin plots and choose your own. The v3 chemistry detects many more genes per cell than the v1 of PBMC 3k, and the distribution of mitochondrial reads is also different. The same applies to the number of PCs and the clustering resolution.
+* <i class="fa fa-exclamation-triangle"></i> **Memory:** with ~10,000 cells, two lines of the example would create huge **dense** matrices (with all the zeros stored), and R can run out of memory and crash. Change them as follows:
+    + **Comparing the size of the sparse and dense matrices.** Instead of creating the dense matrix with `as.matrix()` (~2.7 GB), calculate how much it would take: a dense matrix stores every value as a number of 8 bytes.
+    ```r
+    # number of values in the matrix x 8 bytes, converted to MB
+    dense.mb <- nrow(data) * ncol(data) * 8 / 1024^2
+    # real size of the sparse matrix, in MB
+    sparse.mb <- as.numeric(object.size(data)) / 1024^2
+    c(dense = dense.mb, sparse = sparse.mb)
+    # fraction of zeros: 1 - (number of non-zero values / total number of values)
+    1 - Matrix::nnzero(data) / (nrow(data) * ncol(data))
+    ```
+    + **Scaling.** In the example we scaled all genes (`features = all.genes`). The scaled matrix is dense (genes × cells). With 10,000 cells it is better to scale only the 2,000 highly variable genes, which is the default behaviour of `ScaleData()` when we do not give the `features` argument. It is enough, because the PCA only uses the highly variable genes:
+    ```r
+    obj <- ScaleData(obj)   # scales only VariableFeatures(obj)
+    obj <- RunPCA(obj, features = VariableFeatures(object = obj))
+    ```
+* <i class="fa fa-key"></i> With ~10,000 cells, `FindAllMarkers()` can be slow. Install `presto` (see section 2.1), or use the argument `max.cells.per.ident = 500`.
+* <i class="fa fa-key"></i> **How to annotate a cluster:**
+    1. Get its most specific markers: genes detected in most cells of the cluster and in few cells of the rest (high `pct.1`, low `pct.2`):
+    ```r
+    markers %>% group_by(cluster) %>% filter(p_val_adj < 0.05) %>%
+      arrange(desc(pct.1 - pct.2), .by_group = TRUE) %>% slice_head(n = 10)
+    ```
+    2. Search for the cell type that expresses these genes. [CellMarker 3.0](http://bio-bigdata.hrbmu.edu.cn/CellMarker/) has a *cell annotation* tool: paste the list of markers, choose species and tissue (blood), and it suggests the most likely cell types. You can also use [PanglaoDB](https://panglaodb.se/) or the [Human Protein Atlas — Single cell type](https://www.proteinatlas.org/humanproteome/single+cell+type) to check individual genes.
+    3. Confirm it the other way round: look for the canonical markers of that cell type (databases, literature) and check with `FeaturePlot()` or `DotPlot()` that they are expressed in that cluster and not in the others.
+    4. Several clusters can be the same cell type (e.g., different states of monocytes): it is fine to give them the same name.
+* <i class="fa fa-key"></i> Some clusters may not correspond to a real cell type: for example, clusters that express markers of two different cell types at the same time. What could they be?
+* <i class="fa fa-rocket"></i> Compare the cell types and proportions you find in PBMC 10k with those of the worked example. Which new populations have you found? Why could you find them in this dataset and not in PBMC 3k?
+
+<div style="background-color: #86CBBB; 1px; height:3px " ></div>
+
+# 3. Write an article in Overleaf
+
+**Write a short article of your scRNA-seq analysis. You can use the [Overleaf report sample](https://www.overleaf.com/read/vchzpswtycyg). The article should contain the following sections:**
+
+1. Short abstract
+2. Methods
+    + Packages and tools used
+    + Data description
+    + Quality control, normalization, clustering and marker detection (with the parameters you chose and why)
+3. Results with figures (at least: QC plots, UMAP with the annotated cell types and a `DotPlot` or `FeaturePlot` of the markers used for the annotation)
+4. Discussion
+5. Author contributions (see below)
+6. Bibliography
+7. Appendix with supplementary figures and the code (commented and with proper objects names)
+
+#### Author contributions (CRediT)
+
+At the end of the article, include an **Author contributions** section in which each member of the group states what they did, using the [**CRediT** (Contributor Roles Taxonomy)](https://authors.wiley.com/author-resources/Journal-Authors/open-access/credit.html). For each author, list only the roles that apply, and indicate the degree of contribution as **(lead)**, **(equal)** or **(supporting)**. All group members must agree on the final statement.
+
+The 14 CRediT roles are:
+
+| **Role** | **Description** |
+|----------|-----------------|
+| Conceptualization | Ideas; formulation of the overarching research goals and aims |
+| Data Curation | Annotating, cleaning and maintaining the data (and code needed to interpret it) |
+| Formal Analysis | Applying statistical, computational or other formal techniques to analyse the data |
+| Funding Acquisition | Obtaining the financial support for the project |
+| Investigation | Conducting the research and collecting the data/evidence |
+| Methodology | Developing or designing the methods |
+| Project Administration | Managing and coordinating the planning and execution of the work |
+| Resources | Providing study materials, data, computing resources or other analysis tools |
+| Software | Programming, implementing code and algorithms, testing code |
+| Supervision | Oversight and leadership of the planning and execution of the work |
+| Validation | Verifying the reproducibility of the results |
+| Visualization | Preparing the figures and data visualisations |
+| Writing – Original Draft | Writing the initial draft |
+| Writing – Review & Editing | Critically reviewing, commenting on and revising the text |
+
+Some roles (e.g., *Funding Acquisition*, *Supervision*) will probably not apply to your work. Example:
+
+> **Author A:** Conceptualization (equal); Data Curation (lead); Software (lead); Formal Analysis (supporting); Writing – Review & Editing (equal). **Author B:** Conceptualization (equal); Formal Analysis (lead); Visualization (lead); Writing – Original Draft (lead); Writing – Review & Editing (equal).
+
+<div style="background-color: #86CBBB; 1px; height:3px " ></div>
+
+# 4. Upload your results to your GitHub
+
+Upload this `Rmd` document and the figures you have generated to your GitHub repository.
+
+<div style="background-color: #86CBBB; 1px; height:3px " ></div>
+
+# 5. References
+
+* Hao Y, et al. (2024). Dictionary learning for integrative, multimodal and scalable single-cell analysis. *Nature Biotechnology*, 42, 293–304.
+* Seurat — Guided clustering tutorial: <https://satijalab.org/seurat/articles/pbmc3k_tutorial.html>
+* 10x Genomics public datasets: <https://www.10xgenomics.com/datasets>
+
+<div style="background-color: #86CBBB; 1px; height:3px " ></div>
+<br>

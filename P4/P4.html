@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Current Topics in Bioinformatics" />
+
+
+<title>P4 | Solving real cases in genomics Identifying cell types with single-cell RNA-seq</title>
+
+<script src="P4_files/header-attrs-2.32/header-attrs.js"></script>
+<script src="P4_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="P4_files/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="P4_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="P4_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="P4_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="P4_files/navigation-1.1/tabsets.js"></script>
+<link href="P4_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="P4_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore"><strong>P4 | Solving real cases in
+genomics</strong><br><font color='#A8A8A8' size='5'>Identifying cell
+types with single-cell RNA-seq</font></h1>
+<h4 class="author">Current Topics in Bioinformatics</h4>
+<h4 class="date">November 2026</h4>
+
+</div>
+
+
+<style>
+  @import url(https://fonts.googleapis.com/css?family=Fira+Sans:300,300i,400,400i,500,500i,700,700i);
+  @import url(https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css);
+  @import url("https://use.fontawesome.com/releases/v5.10.1/css/all.css");
+</style>
+<div style="background-color: #86CBBB; 1px; height:3px ">
+
+</div>
+<div id="introduction" class="section level2">
+<h2>1. Introduction</h2>
+<p>Bulk RNA-seq, like the one we analysed in P3, measures the
+<strong>average</strong> expression of each gene across thousands or
+millions of cells. However, tissues are mixtures of many different cell
+types, and a change in a bulk profile can be due to a change in gene
+expression <em>or</em> to a change in the proportion of cell types.
+<strong>Single-cell RNA-seq</strong> (scRNA-seq) measures gene
+expression in each individual cell, which allows us to discover which
+cell types are present in a sample, in which proportions, and which
+genes characterise each of them.</p>
+<p>The most widely used scRNA-seq technology is the droplet-based
+<strong>10x Genomics Chromium</strong>. Each cell is captured in an oil
+droplet together with a bead carrying a unique <strong>cell
+barcode</strong> and <strong>UMIs</strong> (<em>Unique Molecular
+Identifiers</em>), so that each sequenced read can be assigned to a cell
+and PCR duplicates can be collapsed. The <strong>Cell Ranger</strong>
+pipeline then produces, for each sample, a <strong>count matrix</strong>
+of genes × cells.</p>
+<p>In this practical we will analyse scRNA-seq data with <a
+href="https://satijalab.org/seurat/"><strong>Seurat</strong></a>, the
+most widely used R package for single-cell analysis (<a
+href="https://www.nature.com/articles/s41587-023-01767-y">Hao, et al.,
+2024</a>). The standard workflow is:</p>
+<center>
+<strong>Quality control → Normalization → Highly variable genes →
+Scaling &amp; PCA → Clustering &amp; UMAP → Marker genes → Cell type
+annotation</strong>
+</center>
+<div id="experimental-data" class="section level3">
+<h3>1.1 Experimental data</h3>
+<p>10x Genomics provides many public datasets in Cell Ranger format (a
+folder with the files <code>barcodes.tsv</code>,
+<code>genes.tsv</code>/<code>features.tsv</code> and
+<code>matrix.mtx</code>). In this practical we will use two datasets of
+<strong>peripheral blood mononuclear cells (PBMC)</strong> from healthy
+donors:</p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="24%" />
+<col width="17%" />
+<col width="14%" />
+<col width="22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Dataset</strong></th>
+<th><strong>Chemistry</strong></th>
+<th><strong>Cells</strong></th>
+<th><strong>Use</strong></th>
+<th><strong>Download</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PBMC 3k</td>
+<td>10x v1</td>
+<td>~2,700</td>
+<td>Worked example</td>
+<td><a
+href="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz">Link</a></td>
+</tr>
+<tr class="even">
+<td>PBMC 10k</td>
+<td>10x v3</td>
+<td>~11,500</td>
+<td>Your analysis</td>
+<td><a
+href="https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_10k_v3/pbmc_10k_v3_filtered_feature_bc_matrix.tar.gz">Link</a></td>
+</tr>
+</tbody>
+</table>
+<p>The practical consists of a worked example with the <strong>PBMC
+3k</strong> dataset, following the <a
+href="https://satijalab.org/seurat/articles/pbmc3k_tutorial.html">Seurat
+guided clustering tutorial</a>. Then, you will analyse the <strong>PBMC
+10k</strong> dataset on your own. It is the same type of sample, but
+with four times more cells and a more sensitive chemistry, so you will
+be able to find <strong>more cell types and subtypes</strong> than in
+the example. <strong>Nobody will tell you which ones: annotating them is
+your job</strong>.</p>
+<div id="p4-learning-outcomes" class="section level4">
+<h4>P4 Learning outcomes</h4>
+<ul>
+<li>Understand the structure of single-cell RNA-seq data (sparse count
+matrices)</li>
+<li>Perform quality control of cells and justify the filtering
+thresholds</li>
+<li>Apply the standard Seurat workflow: normalization, dimensionality
+reduction and clustering</li>
+<li>Identify marker genes and annotate cell types using biological
+knowledge and databases</li>
+<li>Visualize the results (P2)</li>
+</ul>
+</div>
+</div>
+<div id="practicals-organization" class="section level3">
+<h3>1.2 Practicals organization</h3>
+<p>In this practical, we are going to use the <a
+href="https://posit.co/"><strong>RStudio</strong></a> integrated
+development environment (IDE) for R.</p>
+<p>You will see different icons through the document, the meaning of
+which is:</p>
+<p> <i class="fas fa-info-circle"></i>: additional or useful
+information<br>  <i class="fas fa-search"></i>: a worked example<br>
+ <i class="fa fa-cogs"></i>: a practical exercise<br>
+ <i class="fas fa-comment-dots"></i>: a space to answer the exercise<br>
+ <i class="fa fa-key"></i>: a hint to solve an exercise<br>
+ <i class="fa fa-rocket"></i>: a more challenging exercise<br><br></p>
+<div style="background-color: #86CBBB; 1px; height:3px ">
+
+</div>
+</div>
+</div>
+<div id="tools-installation" class="section level1">
+<h1>2. Tools installation</h1>
+<p>Follow <code>P2.Rmd</code> instructions if you need to install
+<strong><a href="https://cran.r-project.org/">R</a></strong> and/or
+<strong><a
+href="https://posit.co/download/rstudio-desktop/#download">RStudio</a></strong>
+for either Windows or Linux.</p>
+<div id="required-r-packages" class="section level3">
+<h3>2.1 Required R packages</h3>
+<p>You don’t need to install the packages in the UAB computers, only
+loading them.</p>
+<pre class="r"><code>install.packages(&quot;Seurat&quot;)
+install.packages(&quot;dplyr&quot;)
+install.packages(&quot;patchwork&quot;)
+install.packages(&quot;ggplot2&quot;)</code></pre>
+<p><i class="fa fa-exclamation-triangle"></i>
+<strong><code>SingleR</code> is not installed in the UAB
+computers.</strong> If you want to do the optional automatic annotation
+activity (section 8), install it yourself at the beginning of the
+session (it takes a few minutes; it will be installed in your personal R
+library):</p>
+<pre class="r"><code>BiocManager::install(&quot;SingleR&quot;)</code></pre>
+<p><i class="fas fa-info-circle"></i> Optionally, you can install the
+<code>presto</code> package, which makes the search for marker genes
+(<code>FindAllMarkers()</code>) much faster. Seurat will use it
+automatically if it is installed:</p>
+<pre class="r"><code>install.packages(&quot;remotes&quot;)
+remotes::install_github(&quot;immunogenomics/presto&quot;)</code></pre>
+<p>Load the packages:</p>
+<pre class="r"><code>library(Seurat)
+library(dplyr)
+library(patchwork)
+library(ggplot2)</code></pre>
+<div style="background-color: #86CBBB; 1px; height:3px ">
+
+</div>
+</div>
+</div>
+<div id="conducting-a-single-cell-rna-seq-analysis"
+class="section level1">
+<h1><i class = "fa fa-search"></i>Conducting a single-cell RNA-seq
+analysis</h1>
+<p>With this worked example, we are going to analyse ~2,700
+<strong>peripheral blood mononuclear cells</strong> (PBMC) from a
+healthy donor, sequenced with 10x Genomics. PBMCs are blood cells with a
+single, round nucleus: lymphocytes (T cells, B cells, NK cells),
+monocytes and dendritic cells. The goal is to identify, from the
+expression profile of each cell alone, which cell types are present in
+the sample.</p>
+<div id="prepare-data" class="section level3">
+<h3>1. Prepare data</h3>
+<p><strong><i class="fa fa-cogs"></i> Create a working directory named
+<code>Practical 4</code>, and inside a folder named
+<code>data</code>.</strong></p>
+<pre class="r"><code># bash code to create directories</code></pre>
+<p><strong><i class="fa fa-cogs"></i> Navigate to the <code>data</code>
+folder, download the <a
+href="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz">PBMC
+3k data</a> using <code>wget</code> and uncompress it with
+<code>tar</code>.</strong></p>
+<pre class="r"><code># bash code to download and uncompress the data</code></pre>
+<p><i class="fa fa-key"></i> <code>tar -xzvf file.tar.gz</code>
+uncompresses a <code>.tar.gz</code> file. Explore the folder that has
+been created: which files does it contain? Look at the first lines of
+each of them with <code>head</code> (and <code>zcat ... | head</code> if
+they are compressed).</p>
+<div id="answer" class="section level5"
+style="background-color:#F0F0F0">
+<h5> <i class="fas fa-comment-dots"></i> Answer:</h5>
+</div>
+</div>
+<div id="load-the-data-and-create-the-seurat-object"
+class="section level3">
+<h3>2. Load the data and create the Seurat object</h3>
+<p>The <code>Read10X()</code> function reads the output of Cell Ranger
+and returns a <strong>count matrix</strong> with genes in rows and cells
+(barcodes) in columns.</p>
+<p><i class="fa fa-key"></i> Remember to change the working directory or
+the path to properly load the data if it’s necessary:</p>
+<pre class="r"><code># Load the PBMC dataset
+pbmc.data &lt;- Read10X(data.dir = &quot;filtered_gene_bc_matrices/hg19/&quot;)
+dim(pbmc.data)</code></pre>
+<pre><code>## [1] 32738  2700</code></pre>
+<p>Let’s look at the counts of three genes (<em>CD3D</em>,
+<em>TCL1A</em> and <em>MS4A1</em>) in the first 30 cells:</p>
+<pre class="r"><code>pbmc.data[c(&quot;CD3D&quot;, &quot;TCL1A&quot;, &quot;MS4A1&quot;), 1:30]</code></pre>
+<pre><code>## 3 x 30 sparse Matrix of class &quot;dgCMatrix&quot;</code></pre>
+<pre><code>##                                                                    
+## CD3D  4 . 10 . . 1 2 3 1 . . 2 7 1 . . 1 3 . 2  3 . . . . . 3 4 1 5
+## TCL1A . .  . . . . . . 1 . . . . . . . . . . .  . 1 . . . . . . . .
+## MS4A1 . 6  . . . . . . 1 1 1 . . . . . . . . . 36 1 2 . . 2 . . . .</code></pre>
+<p><i class="fa fa-question-circle"></i> <strong>The <code>.</code>
+values in the matrix represent 0s. Why do you think Seurat uses a
+<em>sparse matrix</em> to store the data instead of a normal (dense)
+matrix? Check it by comparing the memory used by both
+objects:</strong></p>
+<pre class="r"><code>dense.size &lt;- object.size(as.matrix(pbmc.data))
+sparse.size &lt;- object.size(pbmc.data)
+format(dense.size, units = &quot;MB&quot;)</code></pre>
+<pre><code>## [1] &quot;676.7 Mb&quot;</code></pre>
+<pre class="r"><code>format(sparse.size, units = &quot;MB&quot;)</code></pre>
+<pre><code>## [1] &quot;28.5 Mb&quot;</code></pre>
+<div id="answer-1" class="section level5"
+style="background-color:#F0F0F0">
+<h5> <i class="fas fa-comment-dots"></i> Answer:</h5>
+</div>
+<p>Now we create the <strong>Seurat object</strong>, the container that
+will store the data and all the results of the analysis. We apply a
+first, very mild filter: we keep genes detected in at least 3 cells, and
+cells with at least 200 detected genes.</p>
+<pre class="r"><code>pbmc &lt;- CreateSeuratObject(counts = pbmc.data, project = &quot;pbmc3k&quot;,
+                           min.cells = 3, min.features = 200)
+pbmc</code></pre>
+<pre><code>## An object of class Seurat 
+## 13714 features across 2700 samples within 1 assay 
+## Active assay: RNA (13714 features, 0 variable features)
+##  1 layer present: counts</code></pre>
+<p>The phenotype information of each cell (the equivalent of
+<code>colData()</code> in P3) is stored in the <code>meta.data</code>
+slot. Seurat has already calculated, for each cell, the total number of
+molecules detected (<code>nCount_RNA</code>) and the number of genes
+detected (<code>nFeature_RNA</code>):</p>
+<pre class="r"><code>head(pbmc@meta.data, 5)</code></pre>
+<pre><code>##                  orig.ident nCount_RNA nFeature_RNA
+## AAACATACAACCAC-1     pbmc3k       2419          779
+## AAACATTGAGCTAC-1     pbmc3k       4903         1352
+## AAACATTGATCAGC-1     pbmc3k       3147         1129
+## AAACCGTGCTTCCG-1     pbmc3k       2639          960
+## AAACCGTGTATGCG-1     pbmc3k        980          521</code></pre>
+</div>
+<div id="quality-control-qc" class="section level3">
+<h3>3. Quality control (QC)</h3>
+<p>Before analysing the data we have to discard low-quality cells. The
+most common problems in droplet-based data are:</p>
+<ul>
+<li><strong>Empty droplets</strong> or broken cells: very few genes
+detected.</li>
+<li><strong>Doublets</strong>: two cells captured in the same droplet,
+with an unusually high number of genes and molecules.</li>
+<li><strong>Dying cells</strong>: a high percentage of reads coming from
+the <strong>mitochondrial genome</strong>. When the cell membrane
+breaks, cytoplasmic mRNAs are lost but the mitochondrial transcripts
+(protected inside the mitochondria) are retained.</li>
+</ul>
+<p>We calculate the percentage of mitochondrial reads with
+<code>PercentageFeatureSet()</code>, using all genes whose name starts
+with <code>MT-</code>:</p>
+<pre class="r"><code>pbmc[[&quot;percent.mt&quot;]] &lt;- PercentageFeatureSet(pbmc, pattern = &quot;^MT-&quot;)</code></pre>
+<p><i class="fas fa-info-circle"></i> In <strong>mouse</strong>,
+mitochondrial gene names are written in lowercase: use
+<code>pattern = "^mt-"</code>. You can check it with
+<code>grep("^mt-", rownames(object), value = TRUE)</code>.</p>
+<p>We visualize the three QC metrics:</p>
+<pre class="r"><code>VlnPlot(pbmc, features = c(&quot;nFeature_RNA&quot;, &quot;nCount_RNA&quot;, &quot;percent.mt&quot;), ncol = 3)</code></pre>
+<p><img src="P4_files/figure-html/qc-violin-1.png" alt="" width="864" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plot1 &lt;- FeatureScatter(pbmc, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;percent.mt&quot;)
+plot2 &lt;- FeatureScatter(pbmc, feature1 = &quot;nCount_RNA&quot;, feature2 = &quot;nFeature_RNA&quot;)
+plot1 + plot2</code></pre>
+<p><img src="P4_files/figure-html/qc-scatter-1.png" alt="" width="864" style="display: block; margin: auto;" /></p>
+<p>We will keep cells with more than 200 and less than 2,500 detected
+genes, and less than 5% of mitochondrial reads:</p>
+<pre class="r"><code>pbmc &lt;- subset(pbmc, subset = nFeature_RNA &gt; 200 &amp; nFeature_RNA &lt; 2500 &amp; percent.mt &lt; 5)
+pbmc</code></pre>
+<pre><code>## An object of class Seurat 
+## 13714 features across 2638 samples within 1 assay 
+## Active assay: RNA (13714 features, 0 variable features)
+##  1 layer present: counts</code></pre>
+<p><i class="fa fa-question-circle"></i> <strong>Looking at your plots,
+do these thresholds seem reasonable for this dataset? Would you change
+any of them? How many cells (and which percentage) have been removed?
+Thresholds are not universal: when you analyse your own dataset, you
+will need to choose (and justify!) your own.</strong></p>
+<div id="answer-2" class="section level5"
+style="background-color:#F0F0F0">
+<h5> <i class="fas fa-comment-dots"></i> Answer:</h5>
+</div>
+</div>
+<div id="normalization-and-highly-variable-genes"
+class="section level3">
+<h3>4. Normalization and highly variable genes</h3>
+<p>Each cell has been sequenced at a different depth, so the counts are
+not directly comparable between cells. The default method,
+<code>LogNormalize</code>, divides the counts of each gene by the total
+counts of the cell, multiplies by a scale factor (10,000) and
+log-transforms the result:</p>
+<pre class="r"><code>pbmc &lt;- NormalizeData(pbmc, normalization.method = &quot;LogNormalize&quot;, scale.factor = 10000)</code></pre>
+<p>Next, we select the genes that vary the most between cells (by
+default, the top 2,000). These <strong>highly variable genes</strong>
+are the most informative ones to distinguish cell types, and focusing on
+them reduces noise and computation time.</p>
+<pre class="r"><code>pbmc &lt;- FindVariableFeatures(pbmc, selection.method = &quot;vst&quot;, nfeatures = 2000)
+
+# Top 10 most highly variable genes
+top10 &lt;- head(VariableFeatures(pbmc), 10)
+top10</code></pre>
+<pre><code>##  [1] &quot;PPBP&quot;   &quot;LYZ&quot;    &quot;S100A9&quot; &quot;IGLL5&quot;  &quot;GNLY&quot;   &quot;FTL&quot;    &quot;PF4&quot;    &quot;FTH1&quot;  
+##  [9] &quot;GNG11&quot;  &quot;S100A8&quot;</code></pre>
+<pre class="r"><code>plot1 &lt;- VariableFeaturePlot(pbmc)
+plot2 &lt;- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot1 + plot2</code></pre>
+<p><img src="P4_files/figure-html/variable-features-1.png" alt="" width="864" style="display: block; margin: auto;" /></p>
+<p><i class="fa fa-question-circle"></i> <strong>Choose two of the top
+10 genes and search for them in <a
+href="https://www.genecards.org/">GeneCards</a>. In which cell type are
+they expressed?</strong></p>
+<div id="answer-3" class="section level5"
+style="background-color:#F0F0F0">
+<h5> <i class="fas fa-comment-dots"></i> Answer:</h5>
+</div>
+</div>
+<div id="scaling-and-dimensionality-reduction-pca"
+class="section level3">
+<h3>5. Scaling and dimensionality reduction (PCA)</h3>
+<p>Before the PCA, we <strong>scale</strong> the data so that each gene
+has mean 0 and variance 1 across cells. This way, highly expressed genes
+do not dominate the analysis.</p>
+<pre class="r"><code>all.genes &lt;- rownames(pbmc)
+pbmc &lt;- ScaleData(pbmc, features = all.genes)</code></pre>
+<p>We run a <strong>Principal Component Analysis</strong> (PCA) on the
+highly variable genes:</p>
+<pre class="r"><code>pbmc &lt;- RunPCA(pbmc, features = VariableFeatures(object = pbmc))
+
+# Genes with the highest loadings in the first 5 PCs
+print(pbmc[[&quot;pca&quot;]], dims = 1:5, nfeatures = 5)</code></pre>
+<pre><code>## PC_ 1 
+## Positive:  CST3, TYROBP, LST1, AIF1, FTL 
+## Negative:  MALAT1, LTB, IL32, IL7R, CD2 
+## PC_ 2 
+## Positive:  NKG7, PRF1, CST7, GZMB, GZMA 
+## Negative:  CD79A, MS4A1, TCL1A, HLA-DQA1, HLA-DQB1 
+## PC_ 3 
+## Positive:  PPBP, PF4, SDPR, SPARC, GNG11 
+## Negative:  HLA-DQA1, CD79A, CD79B, HLA-DQB1, HLA-DPB1 
+## PC_ 4 
+## Positive:  HLA-DQA1, CD79B, CD79A, MS4A1, HLA-DQB1 
+## Negative:  VIM, IL7R, S100A6, IL32, S100A8 
+## PC_ 5 
+## Positive:  GZMB, NKG7, S100A8, FGFBP2, GNLY 
+## Negative:  LTB, IL7R, CKB, VIM, MS4A7</code></pre>
+<pre class="r"><code>DimPlot(pbmc, reduction = &quot;pca&quot;) + NoLegend()</code></pre>
+<p><img src="P4_files/figure-html/pca-plot-1.png" alt="" width="576" style="display: block; margin: auto;" /></p>
+<p>How many PCs should we keep for the following steps? The
+<strong>elbow plot</strong> shows the standard deviation explained by
+each PC. We look for the point where the curve flattens (the
+“elbow”):</p>
+<pre class="r"><code>ElbowPlot(pbmc)</code></pre>
+<p><img src="P4_files/figure-html/elbow-1.png" alt="" width="576" style="display: block; margin: auto;" /></p>
+<p><i class="fa fa-question-circle"></i> <strong>Where is the elbow? How
+many PCs would you use? There is no single correct answer, but the <a
+href="https://satijalab.org/seurat/articles/pbmc3k_tutorial.html">Seurat
+tutorial</a> recommends to <em>err on the higher side</em>. Why do you
+think so?</strong></p>
+<div id="answer-4" class="section level5"
+style="background-color:#F0F0F0">
+<h5> <i class="fas fa-comment-dots"></i> Answer:</h5>
+</div>
+</div>
+<div id="clustering-and-umap" class="section level3">
+<h3>6. Clustering and UMAP</h3>
+<p>Seurat groups the cells by building a <strong>k-nearest neighbours
+graph</strong> in the PCA space (<code>FindNeighbors()</code>) and then
+finding communities of highly connected cells in this graph
+(<code>FindClusters()</code>). The <code>resolution</code> parameter
+controls the granularity: higher values give more clusters.</p>
+<pre class="r"><code>pbmc &lt;- FindNeighbors(pbmc, dims = 1:10)
+pbmc &lt;- FindClusters(pbmc, resolution = 0.5)</code></pre>
+<pre><code>## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
+## 
+## Number of nodes: 2638
+## Number of edges: 95927
+## 
+## Running Louvain algorithm...
+## Maximum modularity in 10 random starts: 0.8728
+## Number of communities: 9
+## Elapsed time: 0 seconds</code></pre>
+<pre class="r"><code># number of cells in each cluster
+table(Idents(pbmc))</code></pre>
+<pre><code>## 
+##   0   1   2   3   4   5   6   7   8 
+## 684 481 476 344 291 162 155  32  13</code></pre>
+<p>To visualize the clusters we use <strong>UMAP</strong>, a non-linear
+dimensionality reduction that places similar cells close to each other
+in two dimensions:</p>
+<pre class="r"><code>pbmc &lt;- RunUMAP(pbmc, dims = 1:10)
+DimPlot(pbmc, reduction = &quot;umap&quot;, label = TRUE)</code></pre>
+<p><img src="P4_files/figure-html/umap-1.png" alt="" width="576" style="display: block; margin: auto;" /></p>
+<p><i class="fa fa-question-circle"></i> <strong>Run
+<code>FindClusters()</code> again with <code>resolution = 0.2</code> and
+<code>resolution = 1.2</code>. How many clusters do you get in each
+case? Note that the clusters were computed on the PCA, not on the UMAP:
+why do you think Seurat does not cluster directly on the two UMAP
+dimensions?</strong></p>
+<p><i class="fa fa-key"></i> To avoid overwriting your results, save the
+new object with a different name
+(e.g. <code>pbmc.test &lt;- FindClusters(pbmc, resolution = 0.2)</code>).</p>
+<div id="answer-5" class="section level5"
+style="background-color:#F0F0F0">
+<h5> <i class="fas fa-comment-dots"></i> Answer:</h5>
+</div>
+</div>
+<div id="marker-genes" class="section level3">
+<h3>7. Marker genes</h3>
+<p><strong>Marker genes</strong> are genes that are differentially
+expressed in one cluster compared to all the other cells.
+<code>FindAllMarkers()</code> tests every cluster against the rest (by
+default, with a Wilcoxon rank-sum test):</p>
+<pre class="r"><code>pbmc.markers &lt;- FindAllMarkers(pbmc, only.pos = TRUE)
+
+# top 3 markers of each cluster
+top3 &lt;- pbmc.markers %&gt;%
+  group_by(cluster) %&gt;%
+  dplyr::filter(avg_log2FC &gt; 1) %&gt;%
+  slice_head(n = 3) %&gt;%
+  ungroup()
+top3</code></pre>
+<pre><code>## # A tibble: 27 × 7
+##        p_val avg_log2FC pct.1 pct.2 p_val_adj cluster gene  
+##        &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;fct&gt;   &lt;chr&gt; 
+##  1 3.75e-112       1.21 0.912 0.592 5.14e-108 0       LDHB  
+##  2 9.57e- 88       2.40 0.447 0.108 1.31e- 83 0       CCR7  
+##  3 1.15e- 76       1.06 0.845 0.406 1.58e- 72 0       CD3D  
+##  4 0               6.65 0.975 0.121 0         1       S100A8
+##  5 0               5.65 0.909 0.059 0         1       LGALS2
+##  6 0               6.18 0.996 0.215 0         1       S100A9
+##  7 2.89e- 90       1.31 0.947 0.465 3.97e- 86 2       IL32  
+##  8 1.06e- 86       1.33 0.981 0.643 1.46e- 82 2       LTB   
+##  9 8.79e- 71       1.06 0.922 0.432 1.21e- 66 2       CD3D  
+## 10 0               6.91 0.936 0.041 0         3       CD79A 
+## # ℹ 17 more rows</code></pre>
+<p><i class="fa fa-question-circle"></i> <strong>What do the columns
+<code>pct.1</code>, <code>pct.2</code>, <code>avg_log2FC</code> and
+<code>p_val_adj</code> mean? Which is more convincing as a marker: a
+gene with <code>pct.1 = 0.95</code> and <code>pct.2 = 0.10</code>, or a
+gene with <code>pct.1 = 0.95</code> and
+<code>pct.2 = 0.80</code>?</strong></p>
+<p><i class="fa fa-key"></i> <code>?FindMarkers</code></p>
+<div id="answer-6" class="section level5"
+style="background-color:#F0F0F0">
+<h5> <i class="fas fa-comment-dots"></i> Answer:</h5>
+</div>
+<p>We can visualize the expression of markers on the UMAP
+(<code>FeaturePlot()</code>), as violin plots (<code>VlnPlot()</code>)
+or summarise many genes and clusters at once with a
+<code>DotPlot()</code>, where the colour represents the average
+expression and the size the percentage of cells of the cluster
+expressing the gene:</p>
+<pre class="r"><code>FeaturePlot(pbmc, features = c(&quot;MS4A1&quot;, &quot;GNLY&quot;, &quot;CD3E&quot;, &quot;CD14&quot;, &quot;FCER1A&quot;,
+                               &quot;FCGR3A&quot;, &quot;LYZ&quot;, &quot;PPBP&quot;, &quot;CD8A&quot;))</code></pre>
+<p><img src="P4_files/figure-html/featureplot-1.png" alt="" width="960" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>canonical.markers &lt;- c(&quot;IL7R&quot;, &quot;CCR7&quot;, &quot;S100A4&quot;, &quot;CD8A&quot;, &quot;MS4A1&quot;, &quot;GNLY&quot;, &quot;NKG7&quot;,
+                       &quot;CD14&quot;, &quot;LYZ&quot;, &quot;FCGR3A&quot;, &quot;MS4A7&quot;, &quot;FCER1A&quot;, &quot;CST3&quot;, &quot;PPBP&quot;)
+DotPlot(pbmc, features = canonical.markers) + RotatedAxis()</code></pre>
+<p><img src="P4_files/figure-html/dotplot-1.png" alt="" width="864" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cell-type-annotation" class="section level3">
+<h3>8. Cell type annotation</h3>
+<p>This is the step that requires <strong>biological knowledge</strong>.
+For PBMCs, the following canonical markers are well known:</p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>Markers</strong></th>
+<th><strong>Cell type</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>IL7R, CCR7</td>
+<td>Naive CD4+ T</td>
+</tr>
+<tr class="even">
+<td>IL7R, S100A4</td>
+<td>Memory CD4+ T</td>
+</tr>
+<tr class="odd">
+<td>CD8A</td>
+<td>CD8+ T</td>
+</tr>
+<tr class="even">
+<td>MS4A1</td>
+<td>B</td>
+</tr>
+<tr class="odd">
+<td>GNLY, NKG7</td>
+<td>NK</td>
+</tr>
+<tr class="even">
+<td>CD14, LYZ</td>
+<td>CD14+ Monocytes</td>
+</tr>
+<tr class="odd">
+<td>FCGR3A, MS4A7</td>
+<td>FCGR3A+ Monocytes</td>
+</tr>
+<tr class="even">
+<td>FCER1A, CST3</td>
+<td>Dendritic cells (DC)</td>
+</tr>
+<tr class="odd">
+<td>PPBP</td>
+<td>Platelets</td>
+</tr>
+</tbody>
+</table>
+<p><i class="fa fa-question-circle"></i> <strong>Using the
+<code>FeaturePlot()</code>, the <code>DotPlot()</code> and the table of
+markers, assign a cell type to each cluster before looking at the
+solution below. Which pairs of cell types are the most difficult to
+distinguish? Why?</strong></p>
+<div id="answer-7" class="section level5"
+style="background-color:#F0F0F0">
+<h5> <i class="fas fa-comment-dots"></i> Answer:</h5>
+</div>
+<p>Once each cluster has a name, we rename the identities of the
+cells:</p>
+<pre class="r"><code>new.cluster.ids &lt;- c(&quot;Naive CD4 T&quot;, &quot;CD14+ Mono&quot;, &quot;Memory CD4 T&quot;, &quot;B&quot;, &quot;CD8 T&quot;,
+                     &quot;FCGR3A+ Mono&quot;, &quot;NK&quot;, &quot;DC&quot;, &quot;Platelet&quot;)
+names(new.cluster.ids) &lt;- levels(pbmc)
+pbmc &lt;- RenameIdents(pbmc, new.cluster.ids)
+
+DimPlot(pbmc, reduction = &quot;umap&quot;, label = TRUE, pt.size = 0.5) + NoLegend()</code></pre>
+<p><img src="P4_files/figure-html/annotation-1.png" alt="" width="576" style="display: block; margin: auto;" /></p>
+<p><i class="fas fa-info-circle"></i> The order of the clusters can
+change between Seurat versions or with different parameters.
+<strong>Always check</strong> that the names you assign match the
+markers of each cluster (for example, with the <code>DotPlot()</code>
+above).</p>
+<p>Finally, we can calculate the <strong>proportion of each cell
+type</strong> in the sample:</p>
+<pre class="r"><code>cell.types &lt;- data.frame(table(Idents(pbmc)))
+colnames(cell.types) &lt;- c(&quot;CellType&quot;, &quot;Cells&quot;)
+cell.types$Percentage &lt;- round(100 * cell.types$Cells / sum(cell.types$Cells), 1)
+cell.types</code></pre>
+<pre><code>##       CellType Cells Percentage
+## 1  Naive CD4 T   684       25.9
+## 2   CD14+ Mono   481       18.2
+## 3 Memory CD4 T   476       18.0
+## 4            B   344       13.0
+## 5        CD8 T   291       11.0
+## 6 FCGR3A+ Mono   162        6.1
+## 7           NK   155        5.9
+## 8           DC    32        1.2
+## 9     Platelet    13        0.5</code></pre>
+<p><i class="fa fa-question-circle"></i> <strong>Make a
+publication-quality bar plot of the proportion of each cell type with
+<code>ggplot2</code> (P2). Are these proportions what you would expect
+in the blood of a healthy person?</strong></p>
+<div id="answer-8" class="section level5"
+style="background-color:#F0F0F0">
+<h5> <i class="fas fa-comment-dots"></i> Answer:</h5>
+</div>
+<p>Save the final object so that you don’t need to repeat the whole
+analysis:</p>
+<pre class="r"><code>saveRDS(pbmc, file = &quot;pbmc3k_final.rds&quot;)
+# To load it again: pbmc &lt;- readRDS(&quot;pbmc3k_final.rds&quot;)</code></pre>
+<p><i class="fa fa-rocket"></i> <strong>Optional activity: automatic
+annotation.</strong> Besides manual annotation, there are tools that
+annotate cells automatically by comparing them to a reference dataset of
+known cell types. One of them is the Bioconductor package <a
+href="https://bioconductor.org/packages/release/bioc/vignettes/SingleR/inst/doc/SingleR.html"><code>SingleR</code></a>.
+As reference we will use the <strong>Monaco immune dataset</strong>
+(Monaco et al., 2019), with the expression profiles of 29 immune cell
+types sorted from human blood. It is distributed by the
+<code>celldex</code> package, but we provide it as an R file (<a
+href="https://marta-coronado.github.io/TAB/P4/MonacoImmuneData_reference.rds"><code>MonacoImmuneData_reference.rds</code></a>,
+20 MB, also available in the Moodle), so you do not need to install
+<code>celldex</code>. Download it to your working directory with
+<code>wget</code>:</p>
+<pre class="bash"><code>wget https://marta-coronado.github.io/TAB/P4/MonacoImmuneData_reference.rds</code></pre>
+<p>You only need to install <strong><code>SingleR</code></strong> (see
+section 2.1), because it is not installed in the UAB computers. This
+activity is <strong>optional</strong>: if you do it, compare the
+predicted labels with your manual annotation. Do they agree? In which
+cell types do they disagree, and why?</p>
+<pre class="r"><code># Installation (only once; SingleR is NOT installed in the UAB computers)
+BiocManager::install(&quot;SingleR&quot;)
+
+library(SingleR)
+library(SummarizedExperiment)
+
+# Load the reference dataset (genes x reference samples, with their cell type labels)
+ref &lt;- readRDS(&quot;MonacoImmuneData_reference.rds&quot;)
+table(ref$label.fine)
+
+# SingleR compares the normalized expression of each cell with the reference
+pred &lt;- SingleR(test = GetAssayData(pbmc, layer = &quot;data&quot;),
+                ref = ref,
+                labels = ref$label.fine)
+
+# Add the predicted labels to the Seurat object and plot them
+pbmc$singler &lt;- pred$labels
+DimPlot(pbmc, group.by = &quot;singler&quot;, label = TRUE, repel = TRUE) + NoLegend()
+
+# Compare with the manual annotation: rows = your clusters, columns = SingleR labels
+table(Idents(pbmc), pbmc$singler)</code></pre>
+<div style="background-color: #86CBBB; 1px; height:3px ">
+
+</div>
+</div>
+</div>
+<div id="perform-a-single-cell-rna-seq-analysis" class="section level1">
+<h1><i class="fa fa-cogs"></i> Perform a single-cell RNA-seq
+analysis</h1>
+<p><strong>Following the PBMC 3k example, analyse the <a
+href="https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_10k_v3/pbmc_10k_v3_filtered_feature_bc_matrix.tar.gz">PBMC
+10k dataset</a>. Your main goal is to identify and annotate as many cell
+types and subtypes as you can, and compare them with the ones found in
+the worked example.</strong></p>
+<p>Some advice:</p>
+<ul>
+<li><i class="fa fa-key"></i> This dataset was processed with a recent
+version of Cell Ranger: the files are compressed (<code>.gz</code>) and
+the genes are in <code>features.tsv.gz</code>. <code>Read10X()</code>
+reads both formats: give it the folder that contains the three
+files.</li>
+<li><i class="fa fa-key"></i> <strong>Do not copy the QC thresholds of
+the example</strong>: look at your violin plots and choose your own. The
+v3 chemistry detects many more genes per cell than the v1 of PBMC 3k,
+and the distribution of mitochondrial reads is also different. The same
+applies to the number of PCs and the clustering resolution.</li>
+<li><i class="fa fa-exclamation-triangle"></i> <strong>Memory:</strong>
+with ~10,000 cells, two lines of the example would create huge
+<strong>dense</strong> matrices (with all the zeros stored), and R can
+run out of memory and crash. Change them as follows:
+<ul>
+<li><strong>Comparing the size of the sparse and dense
+matrices.</strong> Instead of creating the dense matrix with
+<code>as.matrix()</code> (~2.7 GB), calculate how much it would take: a
+dense matrix stores every value as a number of 8 bytes.</li>
+</ul>
+<pre class="r"><code># number of values in the matrix x 8 bytes, converted to MB
+dense.mb &lt;- nrow(data) * ncol(data) * 8 / 1024^2
+# real size of the sparse matrix, in MB
+sparse.mb &lt;- as.numeric(object.size(data)) / 1024^2
+c(dense = dense.mb, sparse = sparse.mb)
+# fraction of zeros: 1 - (number of non-zero values / total number of values)
+1 - Matrix::nnzero(data) / (nrow(data) * ncol(data))</code></pre>
+<ul>
+<li><strong>Scaling.</strong> In the example we scaled all genes
+(<code>features = all.genes</code>). The scaled matrix is dense (genes ×
+cells). With 10,000 cells it is better to scale only the 2,000 highly
+variable genes, which is the default behaviour of
+<code>ScaleData()</code> when we do not give the <code>features</code>
+argument. It is enough, because the PCA only uses the highly variable
+genes:</li>
+</ul>
+<pre class="r"><code>obj &lt;- ScaleData(obj)   # scales only VariableFeatures(obj)
+obj &lt;- RunPCA(obj, features = VariableFeatures(object = obj))</code></pre></li>
+<li><i class="fa fa-key"></i> With ~10,000 cells,
+<code>FindAllMarkers()</code> can be slow. Install <code>presto</code>
+(see section 2.1), or use the argument
+<code>max.cells.per.ident = 500</code>.</li>
+<li><i class="fa fa-key"></i> <strong>How to annotate a
+cluster:</strong>
+<ol style="list-style-type: decimal">
+<li>Get its most specific markers: genes detected in most cells of the
+cluster and in few cells of the rest (high <code>pct.1</code>, low
+<code>pct.2</code>):</li>
+</ol>
+<pre class="r"><code>markers %&gt;% group_by(cluster) %&gt;% filter(p_val_adj &lt; 0.05) %&gt;%
+  arrange(desc(pct.1 - pct.2), .by_group = TRUE) %&gt;% slice_head(n = 10)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Search for the cell type that expresses these genes. <a
+href="http://bio-bigdata.hrbmu.edu.cn/CellMarker/">CellMarker 3.0</a>
+has a <em>cell annotation</em> tool: paste the list of markers, choose
+species and tissue (blood), and it suggests the most likely cell types.
+You can also use <a href="https://panglaodb.se/">PanglaoDB</a> or the <a
+href="https://www.proteinatlas.org/humanproteome/single+cell+type">Human
+Protein Atlas — Single cell type</a> to check individual genes.</li>
+<li>Confirm it the other way round: look for the canonical markers of
+that cell type (databases, literature) and check with
+<code>FeaturePlot()</code> or <code>DotPlot()</code> that they are
+expressed in that cluster and not in the others.</li>
+<li>Several clusters can be the same cell type (e.g., different states
+of monocytes): it is fine to give them the same name.</li>
+</ol></li>
+<li><i class="fa fa-key"></i> Some clusters may not correspond to a real
+cell type: for example, clusters that express markers of two different
+cell types at the same time. What could they be?</li>
+<li><i class="fa fa-rocket"></i> Compare the cell types and proportions
+you find in PBMC 10k with those of the worked example. Which new
+populations have you found? Why could you find them in this dataset and
+not in PBMC 3k?</li>
+</ul>
+<div style="background-color: #86CBBB; 1px; height:3px ">
+
+</div>
+</div>
+<div id="write-an-article-in-overleaf" class="section level1">
+<h1>3. Write an article in Overleaf</h1>
+<p><strong>Write a short article of your scRNA-seq analysis. You can use
+the <a href="https://www.overleaf.com/read/vchzpswtycyg">Overleaf report
+sample</a>. The article should contain the following
+sections:</strong></p>
+<ol style="list-style-type: decimal">
+<li>Short abstract</li>
+<li>Methods
+<ul>
+<li>Packages and tools used</li>
+<li>Data description</li>
+<li>Quality control, normalization, clustering and marker detection
+(with the parameters you chose and why)</li>
+</ul></li>
+<li>Results with figures (at least: QC plots, UMAP with the annotated
+cell types and a <code>DotPlot</code> or <code>FeaturePlot</code> of the
+markers used for the annotation)</li>
+<li>Discussion</li>
+<li>Author contributions (see below)</li>
+<li>Bibliography</li>
+<li>Appendix with supplementary figures and the code (commented and with
+proper objects names)</li>
+</ol>
+<div id="author-contributions-credit" class="section level4">
+<h4>Author contributions (CRediT)</h4>
+<p>At the end of the article, include an <strong>Author
+contributions</strong> section in which each member of the group states
+what they did, using the <a
+href="https://authors.wiley.com/author-resources/Journal-Authors/open-access/credit.html"><strong>CRediT</strong>
+(Contributor Roles Taxonomy)</a>. For each author, list only the roles
+that apply, and indicate the degree of contribution as
+<strong>(lead)</strong>, <strong>(equal)</strong> or
+<strong>(supporting)</strong>. All group members must agree on the final
+statement.</p>
+<p>The 14 CRediT roles are:</p>
+<table>
+<colgroup>
+<col width="37%" />
+<col width="62%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Role</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Conceptualization</td>
+<td>Ideas; formulation of the overarching research goals and aims</td>
+</tr>
+<tr class="even">
+<td>Data Curation</td>
+<td>Annotating, cleaning and maintaining the data (and code needed to
+interpret it)</td>
+</tr>
+<tr class="odd">
+<td>Formal Analysis</td>
+<td>Applying statistical, computational or other formal techniques to
+analyse the data</td>
+</tr>
+<tr class="even">
+<td>Funding Acquisition</td>
+<td>Obtaining the financial support for the project</td>
+</tr>
+<tr class="odd">
+<td>Investigation</td>
+<td>Conducting the research and collecting the data/evidence</td>
+</tr>
+<tr class="even">
+<td>Methodology</td>
+<td>Developing or designing the methods</td>
+</tr>
+<tr class="odd">
+<td>Project Administration</td>
+<td>Managing and coordinating the planning and execution of the
+work</td>
+</tr>
+<tr class="even">
+<td>Resources</td>
+<td>Providing study materials, data, computing resources or other
+analysis tools</td>
+</tr>
+<tr class="odd">
+<td>Software</td>
+<td>Programming, implementing code and algorithms, testing code</td>
+</tr>
+<tr class="even">
+<td>Supervision</td>
+<td>Oversight and leadership of the planning and execution of the
+work</td>
+</tr>
+<tr class="odd">
+<td>Validation</td>
+<td>Verifying the reproducibility of the results</td>
+</tr>
+<tr class="even">
+<td>Visualization</td>
+<td>Preparing the figures and data visualisations</td>
+</tr>
+<tr class="odd">
+<td>Writing – Original Draft</td>
+<td>Writing the initial draft</td>
+</tr>
+<tr class="even">
+<td>Writing – Review &amp; Editing</td>
+<td>Critically reviewing, commenting on and revising the text</td>
+</tr>
+</tbody>
+</table>
+<p>Some roles (e.g., <em>Funding Acquisition</em>, <em>Supervision</em>)
+will probably not apply to your work. Example:</p>
+<blockquote>
+<p><strong>Author A:</strong> Conceptualization (equal); Data Curation
+(lead); Software (lead); Formal Analysis (supporting); Writing – Review
+&amp; Editing (equal). <strong>Author B:</strong> Conceptualization
+(equal); Formal Analysis (lead); Visualization (lead); Writing –
+Original Draft (lead); Writing – Review &amp; Editing (equal).</p>
+</blockquote>
+<div style="background-color: #86CBBB; 1px; height:3px ">
+
+</div>
+</div>
+</div>
+<div id="upload-your-results-to-your-github" class="section level1">
+<h1>4. Upload your results to your GitHub</h1>
+<p>Upload this <code>Rmd</code> document and the figures you have
+generated to your GitHub repository.</p>
+<div style="background-color: #86CBBB; 1px; height:3px ">
+
+</div>
+</div>
+<div id="references" class="section level1">
+<h1>5. References</h1>
+<ul>
+<li>Hao Y, et al. (2024). Dictionary learning for integrative,
+multimodal and scalable single-cell analysis. <em>Nature
+Biotechnology</em>, 42, 293–304.</li>
+<li>Seurat — Guided clustering tutorial: <a
+href="https://satijalab.org/seurat/articles/pbmc3k_tutorial.html"
+class="uri">https://satijalab.org/seurat/articles/pbmc3k_tutorial.html</a></li>
+<li>10x Genomics public datasets: <a
+href="https://www.10xgenomics.com/datasets"
+class="uri">https://www.10xgenomics.com/datasets</a></li>
+</ul>
+<div style="background-color: #86CBBB; 1px; height:3px ">
+
+</div>
+<p><br></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

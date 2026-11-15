@@ -12,8 +12,8 @@ Course materials for **Current Topics in Bioinformatics** (*Temas Actuales de la
     - P1: Data management and processing: [`P1/`](P1/) ([view online](https://marta-coronado.github.io/TAB/P1/P1.html))
     - P2: Data exploration and visualization
   - Part 2 · Solving real cases in genomics
-    - P3: Differential gene expression analysis
-    - P4: Single-cell analysis with Seurat
+    - P3: Differential gene expression analysis: [`P3/`](P3/) ([view online](https://marta-coronado.github.io/TAB/P3/P3.html))
+    - P4: Single-cell analysis with Seurat: [`P4/`](P4/) ([view online](https://marta-coronado.github.io/TAB/P4/P4.html))
 
 ## Contact
 

@@ -24,8 +24,11 @@ Welcome to the course website. Here you will find all the course materials, orga
   - <a href="P2/P2.Rmd" download>Download the R Markdown document of P2 here</a>
 
 **Part 2 · Solving real cases in genomics**
-- P3: Differential gene expression analysis *(coming soon)*
-- P4: Single-cell analysis with Seurat *(coming soon)*
+- [P3: Differential gene expression analysis](P3/P3.html)
+  - <a href="P3/P3.Rmd" download>Download the R Markdown document of P3 here</a>
+- [P4: Single-cell analysis with Seurat](P4/P4.html)
+  - <a href="P4/P4.Rmd" download>Download the R Markdown document of P4 here</a>
+  - <a href="P4/MonacoImmuneData_reference.rds" download>Download the SingleR reference dataset (MonacoImmuneData_reference.rds, 20 MB)</a> *(only for the optional automatic annotation activity)*
 
 ---
 

@@ -315,13 +315,13 @@ computers.</strong> If you want to do the optional automatic annotation
 activity (section 8), install it yourself at the beginning of the
 session (it takes a few minutes; it will be installed in your personal R
 library):</p>
-<pre class="r"><code>BiocManager::install(&quot;SingleR&quot;)</code></pre>
+<pre class="r"><code>BiocManager::install(&quot;SingleR&quot;, update = FALSE, ask = FALSE)</code></pre>
 <p><i class="fas fa-info-circle"></i> Optionally, you can install the
 <code>presto</code> package, which makes the search for marker genes
 (<code>FindAllMarkers()</code>) much faster. Seurat will use it
 automatically if it is installed:</p>
 <pre class="r"><code>install.packages(&quot;remotes&quot;)
-remotes::install_github(&quot;immunogenomics/presto&quot;)</code></pre>
+remotes::install_github(&quot;immunogenomics/presto&quot;, upgrade = &quot;never&quot;)</code></pre>
 <p>Load the packages:</p>
 <pre class="r"><code>library(Seurat)
 library(dplyr)
@@ -769,7 +769,7 @@ activity is <strong>optional</strong>: if you do it, compare the
 predicted labels with your manual annotation. Do they agree? In which
 cell types do they disagree, and why?</p>
 <pre class="r"><code># Installation (only once; SingleR is NOT installed in the UAB computers)
-BiocManager::install(&quot;SingleR&quot;)
+BiocManager::install(&quot;SingleR&quot;, update = FALSE, ask = FALSE)
 
 library(SingleR)
 library(SummarizedExperiment)

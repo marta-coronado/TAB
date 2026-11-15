@@ -92,14 +92,14 @@ install.packages("ggplot2")
 <i class="fa fa-exclamation-triangle"></i> **`SingleR` is not installed in the UAB computers.** If you want to do the optional automatic annotation activity (section 8), install it yourself at the beginning of the session (it takes a few minutes; it will be installed in your personal R library):
 
 ```{r install-singler, eval = FALSE}
-BiocManager::install("SingleR")
+BiocManager::install("SingleR", update = FALSE, ask = FALSE)
 ```
 
 <i class="fas fa-info-circle"></i> Optionally, you can install the `presto` package, which makes the search for marker genes (`FindAllMarkers()`) much faster. Seurat will use it automatically if it is installed:
 
 ```{r presto, eval = FALSE}
 install.packages("remotes")
-remotes::install_github("immunogenomics/presto")
+remotes::install_github("immunogenomics/presto", upgrade = "never")
 ```
 
 Load the packages:
@@ -435,7 +435,7 @@ You only need to install **`SingleR`** (see section 2.1), because it is not inst
 
 ```{r singler, eval = FALSE}
 # Installation (only once; SingleR is NOT installed in the UAB computers)
-BiocManager::install("SingleR")
+BiocManager::install("SingleR", update = FALSE, ask = FALSE)
 
 library(SingleR)
 library(SummarizedExperiment)

@@ -47,9 +47,11 @@ In this practical we will analyse scRNA-seq data with [**Seurat**](https://satij
 | **Dataset** | **Chemistry** | **Cells** | **Use** | **Download** |
 |-------------|---------------|-----------|---------|--------------|
 | PBMC 3k | 10x v1 | ~2,700 | Worked example | [Link](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz) |
-| PBMC 10k | 10x v3 | ~11,500 | Your analysis | [Link](https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_10k_v3/pbmc_10k_v3_filtered_feature_bc_matrix.tar.gz) |
+| PBMC 10k | 10x v3 | ~11,500 | Optional analysis | [Link](https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_10k_v3/pbmc_10k_v3_filtered_feature_bc_matrix.tar.gz) |
 
-The practical consists of a worked example with the **PBMC 3k** dataset, following the [Seurat guided clustering tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html). Then, you will analyse the **PBMC 10k** dataset on your own. It is the same type of sample, but with four times more cells and a more sensitive chemistry, so you will be able to find **more cell types and subtypes** than in the example. **Nobody will tell you which ones: annotating them is your job**.
+The practical consists of a worked example with the **PBMC 3k** dataset, following the [Seurat guided clustering tutorial](https://satijalab.org/seurat/articles/pbmc3k_tutorial.html). Finally, you will summarise the whole workflow in a short **visual infographic** (section 3).
+
+<i class="fa fa-rocket"></i> **Optional:** if you want to go further, you can analyse the **PBMC 10k** dataset on your own. It is the same type of sample, but with four times more cells and a more sensitive chemistry, so you will be able to find **more cell types and subtypes** than in the example. **Nobody will tell you which ones: annotating them is your job**.
 
 #### P4 Learning outcomes
 
@@ -58,6 +60,7 @@ The practical consists of a worked example with the **PBMC 3k** dataset, followi
 * Apply the standard Seurat workflow: normalization, dimensionality reduction and clustering
 * Identify marker genes and annotate cell types using biological knowledge and databases
 * Visualize the results (P2)
+* Communicate an analysis workflow visually
 
 ### 1.2 Practicals organization
 
@@ -459,7 +462,9 @@ table(Idents(pbmc), pbmc$singler)
 
 <div style="background-color: #86CBBB; 1px; height:3px " ></div>
 
-# <i class="fa fa-cogs"></i> Perform a single-cell RNA-seq analysis
+# <i class="fa fa-rocket"></i> Optional: perform your own single-cell RNA-seq analysis
+
+<i class="fas fa-info-circle"></i> **This section is optional.** You can complete the practical (and the infographic of section 3) using only the PBMC 3k worked example. If you do this analysis, you can include it in your infographic.
 
 **Following the PBMC 3k example, analyse the [PBMC 10k dataset](https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_10k_v3/pbmc_10k_v3_filtered_feature_bc_matrix.tar.gz). Your main goal is to identify and annotate as many cell types and subtypes as you can, and compare them with the ones found in the worked example.**
 
@@ -498,24 +503,35 @@ Some advice:
 
 <div style="background-color: #86CBBB; 1px; height:3px " ></div>
 
-# 3. Write an article in Overleaf
+# 3. Make an infographic: *How to use Seurat, step by step*
 
-**Write a short article of your scRNA-seq analysis. You can use the [Overleaf report sample](https://www.overleaf.com/read/vchzpswtycyg). The article should contain the following sections:**
+**Instead of writing an article, summarise your analysis in a short visual infographic that explains, step by step, how to analyse scRNA-seq data with Seurat. Imagine that it is addressed to a classmate who has never used Seurat: after reading it, they should understand what each step does and why.** You can use [Canva](https://www.canva.com/), PowerPoint, Google Slides or any other tool you like.
 
-1. Short abstract
-2. Methods
-    + Packages and tools used
-    + Data description
-    + Quality control, normalization, clustering and marker detection (with the parameters you chose and why)
-3. Results with figures (at least: QC plots, UMAP with the annotated cell types and a `DotPlot` or `FeaturePlot` of the markers used for the annotation)
-4. Discussion
-5. Author contributions (see below)
-6. Bibliography
-7. Appendix with supplementary figures and the code (commented and with proper objects names)
+The infographic should:
+
+1. **Be short:** a single page (e.g., A3 poster, vertical) or at most 2–3 slides.
+2. **Follow the workflow step by step:** Load data → Quality control → Normalization & highly variable genes → Scaling & PCA → Clustering & UMAP → Marker genes → Cell type annotation.
+3. **For each step, show:**
+    + What it does and why it is needed (one or two sentences, no long paragraphs)
+    + The main Seurat function(s) used (e.g., `FindClusters()`)
+    + The parameters you chose and why (e.g., QC thresholds, number of PCs, clustering resolution)
+4. **Include your own figures**, made with `ggplot2` in this practical. At least:
+    + The QC plots (`VlnPlot()` or `FeatureScatter()`)
+    + The UMAP with the annotated cell types (`DimPlot()`)
+    + A `DotPlot()` or `FeaturePlot()` of the markers used for the annotation
+    + Your bar plot of cell type proportions (section 8)
+5. **Finish with a take-home message:** which cell types you found, and in which proportions.
+6. **Include the authors and their contributions** (see below) in a small footer.
+
+<i class="fa fa-key"></i> All Seurat plots (`DimPlot()`, `VlnPlot()`, `FeaturePlot()`, `DotPlot()`…) are `ggplot2` objects, so you can customise them as you learnt in P2 (e.g., `DimPlot(pbmc) + labs(title = "...") + theme_minimal()`). Save them in high resolution with `ggsave()` (e.g., `ggsave("umap.png", width = 6, height = 5, dpi = 300)`), so they look sharp in the infographic.
+
+<i class="fa fa-key"></i> Prioritise **clarity over quantity**: big figures, arrows or numbers to show the order of the steps, little text and readable fonts. Do not paste screenshots of code or of the R console.
+
+<i class="fa fa-rocket"></i> If you did the optional PBMC 10k analysis, you can add a panel comparing it with the PBMC 3k results.
 
 #### Author contributions (CRediT)
 
-At the end of the article, include an **Author contributions** section in which each member of the group states what they did, using the [**CRediT** (Contributor Roles Taxonomy)](https://authors.wiley.com/author-resources/Journal-Authors/open-access/credit.html). For each author, list only the roles that apply, and indicate the degree of contribution as **(lead)**, **(equal)** or **(supporting)**. All group members must agree on the final statement.
+In the footer of the infographic, include a short **Author contributions** statement in which each member of the group states what they did, using the [**CRediT** (Contributor Roles Taxonomy)](https://authors.wiley.com/author-resources/Journal-Authors/open-access/credit.html). For each author, list only the roles that apply, and indicate the degree of contribution as **(lead)**, **(equal)** or **(supporting)**. All group members must agree on the final statement.
 
 The 14 CRediT roles are:
 
@@ -544,7 +560,7 @@ Some roles (e.g., *Funding Acquisition*, *Supervision*) will probably not apply 
 
 # 4. Upload your results to your GitHub
 
-Upload this `Rmd` document and the figures you have generated to your GitHub repository.
+Upload this `Rmd` document, the figures you have generated and your infographic (exported as PDF or PNG) to your GitHub repository.
 
 <div style="background-color: #86CBBB; 1px; height:3px " ></div>
 
